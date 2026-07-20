@@ -6,6 +6,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#F6F3EC">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+<link rel="icon" type="image/png" sizes="32x32" href="icon-32.png">
 <title>Liste de courses — Leclerc Morières</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/JsBarcode/3.11.5/JsBarcode.all.min.js"></script>
 <!-- Synchronisation entre appareils (facultatif) : voir FIREBASE_CONFIG dans le script plus bas.
@@ -296,6 +299,37 @@
     text-align:center;font-size:11px;color:var(--ink-soft);margin-top:10px;
   }
 
+  .cart-action-btns{display:flex;gap:8px;}
+  .btn-purchased{
+    background:var(--green);color:#fff;border:none;padding:10px 14px;border-radius:9px;
+    font-weight:700;cursor:pointer;font-size:13.5px;
+  }
+  .btn-purchased:active{transform:scale(0.96);}
+
+  .history-section{margin-top:22px;}
+  .history-title{
+    font-size:12px;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-soft);
+    margin:0 0 8px;font-weight:700;
+  }
+  .history-item{
+    background:var(--surface);border:1px solid var(--line);border-radius:10px;
+    padding:10px 12px;margin-bottom:7px;
+  }
+  .history-item .history-row{
+    display:flex;justify-content:space-between;align-items:center;cursor:pointer;
+  }
+  .history-item .history-date{font-size:13.5px;font-weight:600;text-transform:capitalize;}
+  .history-item .history-count{font-size:12px;color:var(--ink-soft);font-family:"SFMono-Regular",monospace;}
+  .history-item .history-details{
+    display:none;font-size:12.5px;color:var(--ink-soft);margin-top:8px;
+    padding-top:8px;border-top:1px dotted var(--line);line-height:1.5;
+  }
+  .history-item.expanded .history-details{display:block;}
+  .history-del{
+    background:none;border:none;color:var(--danger);font-size:12px;
+    text-decoration:underline;cursor:pointer;padding:2px;margin-top:6px;
+  }
+
   /* ---- Card tab ---- */
   .card-wrap{display:flex;flex-direction:column;align-items:center;gap:16px;}
   .loyalty-card{
@@ -345,6 +379,22 @@
     z-index:60;max-width:85%;text-align:center;
   }
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  .undo-banner{
+    position:absolute;bottom:calc(var(--nav-h) + env(safe-area-inset-bottom) + 14px);
+    left:50%;transform:translateX(-50%) translateY(6px);
+    background:var(--ink);color:#fff;
+    padding:10px 10px 10px 16px;border-radius:10px;
+    font-size:13px;display:flex;align-items:center;gap:14px;
+    opacity:0;pointer-events:none;transition:opacity 0.25s ease, transform 0.25s ease;
+    z-index:61;max-width:88%;
+  }
+  .undo-banner.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto;}
+  .undo-banner #undo-btn{
+    background:var(--amber);color:var(--ink);border:none;border-radius:7px;
+    padding:6px 12px;font-weight:700;font-size:12.5px;cursor:pointer;flex-shrink:0;
+  }
+  .undo-banner #undo-btn:active{transform:scale(0.95);}
 
   /* ---- Bottom tab bar (iOS style) ---- */
   nav.bottom-tabs{
@@ -472,10 +522,18 @@
           <div id="cart-container"></div>
           <div class="cart-actions">
             <span class="total-count" id="cart-total">0 article</span>
-            <button class="btn-reset" id="clear-cart-btn">Vider le panier</button>
+            <span class="cart-action-btns">
+              <button class="btn-purchased" id="mark-purchased-btn">Acheté ✓</button>
+              <button class="btn-reset" id="clear-cart-btn">Vider</button>
+            </span>
           </div>
         </div>
         <p class="persist-note">Le panier reste enregistré tant que tu ne le vides pas — même après plusieurs jours ou en fermant le navigateur.</p>
+
+        <div class="history-section">
+          <h3 class="history-title">Historique des courses</h3>
+          <div id="history-container"></div>
+        </div>
       </div>
     </section>
 
@@ -545,6 +603,10 @@
   </nav>
 
   <div class="toast" id="toast"></div>
+  <div class="undo-banner" id="undo-banner">
+    <span id="undo-text"></span>
+    <button id="undo-btn" type="button">Annuler</button>
+  </div>
 
   <div class="sync-modal" id="sync-modal">
     <div class="sync-modal-box">
@@ -572,6 +634,10 @@
     databaseURL: "https://courses-leclerc-default-rtdb.europe-west1.firebasedatabase.app",
     projectId: "courses-leclerc"
   };
+  /* Code de partage figé en dur : si renseigné ici, l'appli s'y connecte automatiquement
+     au démarrage, sans jamais afficher la fenêtre de saisie. Laisse vide pour garder
+     la saisie manuelle (comportement actuel). */
+  var DEFAULT_ROOM_CODE = "123456";
 
   var firebaseConfigured = !!(FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.apiKey.indexOf("COLLE_ICI") === -1 && FIREBASE_CONFIG.databaseURL);
   var firebaseSdkAvailable = typeof firebase !== "undefined";
@@ -615,12 +681,13 @@
 
   /* ---------------- rayon config ---------------- */
   var RAYON_ORDER = [
-    "Fruits & Légumes","Boucherie & Volaille","Poissonnerie","Crèmerie & Œufs",
+    "Fruits & Légumes","Boucherie & Volaille","Poissonnerie","Traiteur & Saurisserie","Crèmerie & Œufs",
     "Boulangerie & Pâtisserie","Épicerie salée","Épicerie sucrée","Surgelés",
     "Boissons","Hygiène & Beauté","Entretien & Maison"
   ];
   var RAYON_COLORS = {
     "Fruits & Légumes":"#3E7A48","Boucherie & Volaille":"#A4402A","Poissonnerie":"#2C6E7F",
+    "Traiteur & Saurisserie":"#6E4A4A",
     "Crèmerie & Œufs":"#B08A15","Boulangerie & Pâtisserie":"#8A5A34","Épicerie salée":"#6B7A3A",
     "Épicerie sucrée":"#C97A2E","Surgelés":"#3E6FA8","Boissons":"#6A4C93",
     "Hygiène & Beauté":"#B65C7A","Entretien & Maison":"#556270"
@@ -628,23 +695,25 @@
   function colorFor(rayon){ return RAYON_COLORS[rayon] || "#6B6456"; }
 
   var DEFAULT_ITEMS_BY_RAYON = {
-    "Fruits & Légumes":["Tomates","Pommes de terre","Oignons","Carottes","Salade","Bananes","Pommes","Citrons","Ail","Courgettes","Poivrons","Avocats","Champignons de Paris","Persil"],
-    "Boucherie & Volaille":["Blancs de poulet","Steak haché","Escalopes de dinde","Merguez","Saucisses de Toulouse","Côtes de porc","Jambon blanc","Bacon","Lardons","Chorizo","Rôti de bœuf"],
-    "Poissonnerie":["Filets de saumon","Cabillaud","Crevettes","Thon en boîte","Moules","Bâtonnets de poisson panés","Saumon fumé","Sardines"],
-    "Crèmerie & Œufs":["Lait demi-écrémé","Yaourts nature","Beurre doux","Beurre demi-sel","Œufs","Crème fraîche","Fromage râpé","Camembert","Emmental","Comté","Fromage blanc","Mozzarella"],
-    "Boulangerie & Pâtisserie":["Baguette","Pain de mie","Croissants","Pain aux raisins","Brioche","Pain complet","Biscottes"],
-    "Épicerie salée":["Pâtes","Riz","Semoule","Sauce tomate","Huile d'olive","Huile de tournesol","Vinaigre balsamique","Moutarde","Mayonnaise","Ketchup","Haricots verts en boîte","Maïs en boîte","Bouillon cube","Farine","Sel","Poivre"],
-    "Épicerie sucrée":["Céréales","Confiture","Pâte à tartiner","Miel","Biscuits sablés","Chocolat noir","Chocolat au lait","Sucre en poudre","Compotes","Barres de céréales","Madeleines"],
-    "Surgelés":["Frites surgelées","Légumes surgelés mélangés","Pizza surgelée","Glace vanille","Épinards hachés surgelés","Nuggets de poulet","Fruits rouges surgelés"],
-    "Boissons":["Eau plate","Eau gazeuse","Jus d'orange","Soda cola","Café moulu","Thé","Vin rouge","Bière","Sirop de menthe","Lait végétal"],
-    "Hygiène & Beauté":["Dentifrice","Brosses à dents","Gel douche","Shampooing","Déodorant","Papier toilette","Mouchoirs","Rasoirs","Coton-tiges","Crème hydratante"],
-    "Entretien & Maison":["Liquide vaisselle","Lessive","Éponges","Sacs poubelle","Essuie-tout","Nettoyant multi-usage","Javel","Assouplissant","Sacs congélation"]
+    "Fruits & Légumes":["Tomates","Pommes de terre","Oignons","Carottes","Salade","Bananes","Pommes","Citrons","Ail","Courgettes","Poivrons","Avocats","Champignons de Paris","Persil","Melon","Pêches","Tomates cerises","Concombre","Ciboule / oignons nouveaux","Radis"],
+    "Boucherie & Volaille":["Blancs de poulet","Steak haché","Escalopes de dinde","Merguez","Saucisses de Toulouse","Côtes de porc","Jambon blanc","Bacon","Lardons","Chorizo","Rôti de bœuf","Chipolatas","Filets de poulet panés (frais)","Fuet / saucisson sec","Steaks hachés spécial burger"],
+    "Poissonnerie":["Filets de saumon","Cabillaud","Crevettes","Thon en boîte","Moules","Bâtonnets de poisson panés","Saumon fumé","Sardines","Sushi"],
+    "Traiteur & Saurisserie":["Tzatziki","Truite fumée"],
+    "Crèmerie & Œufs":["Lait demi-écrémé","Yaourts nature","Beurre doux","Beurre demi-sel","Œufs","Crème fraîche","Fromage râpé","Camembert","Emmental","Comté","Fromage blanc","Mozzarella","Feta","Parmesan râpé","Margarine","Fromage à tartiner","Yaourts à boire"],
+    "Boulangerie & Pâtisserie":["Baguette","Pain de mie","Croissants","Pain aux raisins","Brioche","Pain complet","Biscottes","Pains au lait","Gâche","Pain pita","Pain sans gluten","Pains à burger"],
+    "Épicerie salée":["Pâtes","Riz","Semoule","Sauce tomate","Huile d'olive","Huile de tournesol","Vinaigre balsamique","Moutarde","Mayonnaise","Ketchup","Haricots verts en boîte","Maïs en boîte","Bouillon cube","Farine","Sel","Poivre","Pistaches grillées salées","Riz sushi","Riz basmati","Olives noires","Tapenade","Tomates séchées","Épices guacamole","Crackers TUC","Lait de coco","Nouilles de riz","Chips apéritif","Sauce soja","Sauce barbecue","Vinaigrette"],
+    "Épicerie sucrée":["Céréales","Confiture","Pâte à tartiner","Miel","Biscuits sablés","Chocolat noir","Chocolat au lait","Sucre en poudre","Compotes","Barres de céréales","Madeleines","Nutella","Flocons d'avoine","Gourdes de compote","Galettes de maïs"],
+    "Surgelés":["Frites surgelées","Légumes surgelés mélangés","Pizza surgelée","Glace vanille","Épinards hachés surgelés","Nuggets de poulet","Fruits rouges surgelés","Steak haché surgelé"],
+    "Boissons":["Eau plate","Eau gazeuse","Jus d'orange","Soda cola","Café moulu","Thé","Vin rouge","Bière","Sirop de menthe","Lait végétal","Red Bull","Thé glacé pêche","Pastis"],
+    "Hygiène & Beauté":["Dentifrice","Brosses à dents","Gel douche","Shampooing","Déodorant","Papier toilette","Mouchoirs","Rasoirs","Coton-tiges","Crème hydratante","Serviettes hygiéniques","Protège-slips"],
+    "Entretien & Maison":["Liquide vaisselle","Lessive","Éponges","Sacs poubelle","Essuie-tout","Nettoyant multi-usage","Javel","Assouplissant","Sacs congélation","Bicarbonate de soude","Cristaux de soude","Liquide de rinçage lave-vaisselle","Désodorisant d'intérieur"]
   };
 
   function uid(){
     if(window.crypto && window.crypto.randomUUID){ return window.crypto.randomUUID(); }
     return "id-" + Date.now() + "-" + Math.random().toString(16).slice(2);
   }
+  function catalogKey(rayon, name){ return rayon + "||" + name; }
   function slug(str){
     return String(str).normalize("NFD").replace(/[\u0300-\u036f]/g,"")
       .toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"");
@@ -665,7 +734,8 @@
   }
 
   /* ---------------- state ---------------- */
-  var state = { masterList: [], cart: [], loyaltyCard: "", loyaltyPhoto: "" };
+  var state = { masterList: [], cart: [], loyaltyCard: "", loyaltyPhoto: "", deletedKeys: [], history: [] };
+  var pendingDeletion = null;
   var quickNavObserver = null;
 
   /* ---------------- toast ---------------- */
@@ -689,11 +759,41 @@
   }
   async function persistCard(){
     await storeSet("courses:loyalty-card", state.loyaltyCard);
-    if(syncActive && roomRef){ try{ await roomRef.child("loyaltyCard").set(state.loyaltyCard); }catch(e){} }
+    /* Volontairement non synchronisée : reste strictement locale à cet appareil. */
   }
   async function persistPhoto(){
     await storeSet("courses:loyalty-photo", state.loyaltyPhoto);
-    if(syncActive && roomRef){ try{ await roomRef.child("loyaltyPhoto").set(state.loyaltyPhoto); }catch(e){} }
+    /* Volontairement non synchronisée : reste strictement locale à cet appareil. */
+  }
+  async function persistDeletedKeys(){
+    await storeSet("courses:deleted-defaults", JSON.stringify(state.deletedKeys));
+    if(syncActive && roomRef){ try{ await roomRef.child("deletedKeys").set(state.deletedKeys); }catch(e){} }
+  }
+  async function persistHistory(){
+    await storeSet("courses:history", JSON.stringify(state.history));
+    if(syncActive && roomRef){ try{ await roomRef.child("history").set(state.history); }catch(e){} }
+  }
+
+  /* Ajoute au catalogue les nouveaux articles définis dans DEFAULT_ITEMS_BY_RAYON qui ne sont
+     ni déjà présents, ni marqués comme supprimés par l'utilisateur. Ne retire jamais rien.
+     Peut être appelée à chaque démarrage : elle est sans effet si tout est déjà à jour. */
+  function mergeCatalogIntoMasterList(){
+    var existingKeys = {};
+    state.masterList.forEach(function(it){ existingKeys[catalogKey(it.rayon, it.name)] = true; });
+    var deletedSet = {};
+    (state.deletedKeys || []).forEach(function(k){ deletedSet[k] = true; });
+    var added = false;
+    RAYON_ORDER.forEach(function(rayon){
+      (DEFAULT_ITEMS_BY_RAYON[rayon] || []).forEach(function(name){
+        var key = catalogKey(rayon, name);
+        if(!existingKeys[key] && !deletedSet[key]){
+          state.masterList.push({id: uid(), name: name, rayon: rayon});
+          existingKeys[key] = true;
+          added = true;
+        }
+      });
+    });
+    return added;
   }
 
   function orderedRayons(list){
@@ -748,6 +848,7 @@
       var items = state.masterList.filter(function(it){
         return it.rayon === rayon && (!filter || it.name.toLowerCase().indexOf(filter) !== -1);
       });
+      items.sort(function(a,b){ return a.name.localeCompare(b.name, "fr", {sensitivity:"base"}); });
       if(items.length === 0){ return; }
       anyVisible = true;
       var color = colorFor(rayon);
@@ -811,6 +912,10 @@
     var html = "";
     rayons.forEach(function(rayon){
       var items = state.cart.filter(function(it){ return it.rayon === rayon; });
+      items.sort(function(a,b){
+        if(a.checked !== b.checked){ return a.checked ? 1 : -1; }
+        return a.name.localeCompare(b.name, "fr", {sensitivity:"base"});
+      });
       if(items.length === 0){ return; }
       html += '<div class="cart-rayon-title" style="color:' + colorFor(rayon) + ';">' + escapeHtml(rayon) + '</div>';
       items.forEach(function(it){
@@ -894,11 +999,55 @@
     showToast(item.name + " ajouté au panier");
   }
 
+  function showUndoBanner(text){
+    if(pendingDeletion && pendingDeletion.timer){ clearTimeout(pendingDeletion.timer); }
+    var banner = document.getElementById("undo-banner");
+    document.getElementById("undo-text").textContent = text;
+    banner.classList.add("show");
+    return setTimeout(function(){
+      banner.classList.remove("show");
+      pendingDeletion = null;
+    }, 5000);
+  }
+  function hideUndoBanner(){
+    document.getElementById("undo-banner").classList.remove("show");
+  }
+
+  /* La suppression est appliquée et enregistrée tout de suite (fiable même si l'app est
+     fermée ou si l'autre téléphone synchronise au même moment). "Annuler" restaure
+     ensuite l'article normalement, comme un ajout classique. */
   async function deleteMasterItem(itemId){
+    var item = state.masterList.find(function(it){ return it.id === itemId; });
+    if(!item){ return; }
     state.masterList = state.masterList.filter(function(it){ return it.id !== itemId; });
+
+    var key = catalogKey(item.rayon, item.name);
+    if(state.deletedKeys.indexOf(key) === -1){ state.deletedKeys.push(key); }
+    await persistDeletedKeys();
     await persistMasterList();
     renderList();
     renderRayonSelect();
+
+    var timer = showUndoBanner(item.name + " supprimé");
+    pendingDeletion = { timer: timer, item: item, key: key };
+  }
+
+  async function undoDeleteItem(){
+    if(!pendingDeletion){ return; }
+    clearTimeout(pendingDeletion.timer);
+    var item = pendingDeletion.item;
+    var key = pendingDeletion.key;
+    pendingDeletion = null;
+    hideUndoBanner();
+
+    var idx = state.deletedKeys.indexOf(key);
+    if(idx !== -1){ state.deletedKeys.splice(idx, 1); }
+    state.masterList.push(item);
+    await persistDeletedKeys();
+    await persistMasterList();
+    renderList();
+    renderRayonSelect();
+    showToast(item.name + " restauré");
   }
 
   async function addCustomItem(){
@@ -924,6 +1073,55 @@
     raySelect.value = rayon;
     renderList();
     showToast(name + " ajouté à la liste");
+  }
+
+  function renderHistory(){
+    var container = document.getElementById("history-container");
+    if(!state.history || state.history.length === 0){
+      container.innerHTML = '<p class="empty-note">Aucune course terminée pour l\'instant.</p>';
+      return;
+    }
+    var html = state.history.map(function(entry){
+      var d = new Date(entry.date);
+      var dateLabel = d.toLocaleDateString("fr-FR", {weekday:"long", day:"numeric", month:"long", year:"numeric"});
+      var itemsLabel = (entry.items || []).map(function(it){
+        return escapeHtml(it.name) + (it.qty > 1 ? " (" + it.qty + ")" : "");
+      }).join(", ");
+      return '<div class="history-item" data-id="' + entry.id + '">'
+        + '<div class="history-row" data-action="toggle-history">'
+        + '<span class="history-date">' + escapeHtml(dateLabel) + '</span>'
+        + '<span class="history-count">' + entry.count + (entry.count > 1 ? " art." : " art.") + '</span>'
+        + '</div>'
+        + '<div class="history-details">' + (itemsLabel || "—") + '<br>'
+        + '<button class="history-del" data-action="delete-history" data-id="' + entry.id + '">Supprimer cette entrée</button>'
+        + '</div></div>';
+    }).join("");
+    container.innerHTML = html;
+  }
+
+  async function markAsPurchased(){
+    if(state.cart.length === 0){ showToast("Le panier est vide"); return; }
+    var totalQty = state.cart.reduce(function(sum, it){ return sum + it.qty; }, 0);
+    var entry = {
+      id: uid(),
+      date: new Date().toISOString(),
+      items: state.cart.map(function(it){ return {name: it.name, rayon: it.rayon, qty: it.qty}; }),
+      count: totalQty
+    };
+    state.history.unshift(entry);
+    state.history = state.history.slice(0, 40);
+    await persistHistory();
+    state.cart = [];
+    await persistCart();
+    renderCart();
+    renderHistory();
+    showToast("Courses marquées comme achetées 🛒");
+  }
+
+  async function deleteHistoryEntry(entryId){
+    state.history = state.history.filter(function(e){ return e.id !== entryId; });
+    await persistHistory();
+    renderHistory();
   }
 
   async function toggleChecked(cartId){
@@ -1032,14 +1230,14 @@
         var data = snap.val() || {};
         if(Array.isArray(data.masterList)){ state.masterList = data.masterList; }
         if(Array.isArray(data.cart)){ state.cart = data.cart; }
-        state.loyaltyCard = typeof data.loyaltyCard === "string" ? data.loyaltyCard : "";
-        state.loyaltyPhoto = typeof data.loyaltyPhoto === "string" ? data.loyaltyPhoto : "";
+        if(Array.isArray(data.deletedKeys)){ state.deletedKeys = data.deletedKeys; }
+        if(Array.isArray(data.history)){ state.history = data.history; }
       } else {
         await roomRef.set({
           masterList: state.masterList,
           cart: state.cart,
-          loyaltyCard: state.loyaltyCard,
-          loyaltyPhoto: state.loyaltyPhoto
+          deletedKeys: state.deletedKeys,
+          history: state.history
         });
       }
 
@@ -1049,13 +1247,20 @@
       roomRef.child("cart").on("value", function(s){
         if(s.exists() && Array.isArray(s.val())){ state.cart = s.val(); renderCart(); }
       });
-      roomRef.child("loyaltyCard").on("value", function(s){ state.loyaltyCard = s.val() || ""; renderCard(); });
-      roomRef.child("loyaltyPhoto").on("value", function(s){ state.loyaltyPhoto = s.val() || ""; renderCard(); });
+      roomRef.child("deletedKeys").on("value", function(s){
+        if(s.exists() && Array.isArray(s.val())){ state.deletedKeys = s.val(); }
+      });
+      roomRef.child("history").on("value", function(s){
+        if(s.exists() && Array.isArray(s.val())){ state.history = s.val(); renderHistory(); }
+      });
+      /* La carte de fidélité (numéro et photo) reste volontairement locale à chaque
+         téléphone : elle n'est ni lue ni écrite dans Firebase. */
 
       syncActive = true;
       renderRayonSelect();
       renderList();
       renderCart();
+      renderHistory();
       showToast("Synchronisé avec le code « " + roomCode + " »");
     }catch(e){
       syncActive = false;
@@ -1121,6 +1326,15 @@
       toggleChecked(chk.dataset.id);
     });
     document.getElementById("clear-cart-btn").addEventListener("click", clearCart);
+    document.getElementById("undo-btn").addEventListener("click", undoDeleteItem);
+    document.getElementById("mark-purchased-btn").addEventListener("click", markAsPurchased);
+
+    document.getElementById("history-container").addEventListener("click", function(e){
+      var delBtn = e.target.closest('button[data-action="delete-history"]');
+      if(delBtn){ e.stopPropagation(); deleteHistoryEntry(delBtn.dataset.id); return; }
+      var row = e.target.closest('[data-action="toggle-history"]');
+      if(row){ row.closest(".history-item").classList.toggle("expanded"); }
+    });
 
     document.getElementById("save-card-btn").addEventListener("click", saveLoyaltyCard);
     document.getElementById("card-number-input").addEventListener("keydown", function(e){ if(e.key === "Enter"){ saveLoyaltyCard(); } });
@@ -1151,15 +1365,16 @@
     wireEvents();
 
     var savedList = await storeGet("courses:master-list");
-    if(savedList){
-      try{ state.masterList = JSON.parse(savedList); }catch(e){ state.masterList = seedDefaults(); }
-    } else {
-      state.masterList = seedDefaults();
-      await persistMasterList();
-    }
+    if(savedList){ try{ state.masterList = JSON.parse(savedList); }catch(e){ state.masterList = []; } }
+
+    var savedDeleted = await storeGet("courses:deleted-defaults");
+    if(savedDeleted){ try{ state.deletedKeys = JSON.parse(savedDeleted); }catch(e){ state.deletedKeys = []; } }
 
     var savedCart = await storeGet("courses:cart");
     if(savedCart){ try{ state.cart = JSON.parse(savedCart); }catch(e){ state.cart = []; } }
+
+    var savedHistory = await storeGet("courses:history");
+    if(savedHistory){ try{ state.history = JSON.parse(savedHistory); }catch(e){ state.history = []; } }
 
     state.loyaltyCard = (await storeGet("courses:loyalty-card")) || "";
     state.loyaltyPhoto = (await storeGet("courses:loyalty-photo")) || "";
@@ -1167,14 +1382,24 @@
     renderRayonSelect();
     renderList();
     renderCart();
+    renderHistory();
 
     if(firebaseSdkAvailable && firebaseConfigured){
-      var savedRoomCode = await storeGet("courses:room-code");
+      var savedRoomCode = DEFAULT_ROOM_CODE || (await storeGet("courses:room-code"));
       if(savedRoomCode){
         await connectRoom(savedRoomCode);
       } else {
         showSyncModal("");
       }
+    }
+
+    // Ajoute les nouveaux articles du catalogue (mis à jour depuis les tickets de caisse)
+    // sans jamais toucher aux articles déjà présents, ni faire réapparaître ceux supprimés.
+    var added = mergeCatalogIntoMasterList();
+    if(added){
+      await persistMasterList();
+      renderRayonSelect();
+      renderList();
     }
   }
 
