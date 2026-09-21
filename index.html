@@ -10,7 +10,6 @@
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
 <link rel="icon" type="image/png" sizes="32x32" href="icon-32.png">
 <title>Liste de courses — Leclerc Morières</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/JsBarcode/3.11.5/JsBarcode.all.min.js"></script>
 <!-- Synchronisation entre appareils (facultatif) : voir FIREBASE_CONFIG dans le script plus bas.
      Ces deux lignes ne font rien tant que la configuration n'est pas remplie. -->
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
@@ -307,6 +306,16 @@
   .btn-purchased:active{transform:scale(0.96);}
 
   .history-section{margin-top:22px;}
+  .cart-notes-section{margin-top:22px;}
+  .cart-note-row{
+    background:var(--surface);border:1px solid var(--line);border-radius:10px;
+    padding:9px 8px 9px 13px;margin-top:8px;display:flex;align-items:center;gap:8px;
+  }
+  .cart-note-row .cnf-text{flex:1;font-size:13.5px;color:var(--ink);line-height:1.4;}
+  .cart-note-row-input{
+    flex:1;padding:8px 10px;border:1px solid var(--focus);border-radius:8px;
+    font-size:13.5px;font-family:inherit;background:var(--paper);
+  }
   .history-title{
     font-size:12px;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-soft);
     margin:0 0 8px;font-weight:700;
@@ -329,6 +338,110 @@
     background:none;border:none;color:var(--danger);font-size:12px;
     text-decoration:underline;cursor:pointer;padding:2px;margin-top:6px;
   }
+
+  /* ---- Notes tab ---- */
+  .note-form{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    padding:14px;margin-bottom:16px;
+  }
+  .note-form-title{margin:0 0 10px;font-size:14px;}
+  .note-form .field label{font-size:11px;color:var(--ink-soft);letter-spacing:0.03em;display:block;margin-bottom:4px;}
+  .detect-btn{
+    width:100%;display:flex;align-items:center;justify-content:center;gap:7px;
+    background:var(--paper);border:1.5px dashed var(--focus);color:var(--focus);
+    padding:9px;border-radius:9px;font-size:12.5px;font-weight:600;cursor:pointer;margin-bottom:12px;
+  }
+  .detect-btn:active{transform:scale(0.98);}
+  .note-form input[type=text], .note-form textarea{
+    width:100%;padding:10px;border:1px solid var(--line);border-radius:9px;
+    font-size:14.5px;background:var(--paper);font-family:inherit;resize:vertical;
+  }
+  .note-ing-row{display:flex;gap:6px;margin-top:6px;}
+  .note-ing-row input{flex:1.4;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:14px;background:var(--paper);}
+  .note-ing-row select{flex:1;padding:9px 6px;border:1px solid var(--line);border-radius:8px;font-size:12.5px;background:var(--paper);}
+  .note-ing-row button{
+    background:var(--green);color:#fff;border:none;width:36px;border-radius:8px;font-size:18px;cursor:pointer;flex-shrink:0;
+  }
+  .note-ing-row button:active{transform:scale(0.94);}
+  .note-ing-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+  .note-ing-chip{
+    display:inline-flex;align-items:center;gap:6px;
+    background:var(--paper);border:1px solid var(--line);border-radius:999px;
+    padding:5px 6px 5px 11px;font-size:12.5px;
+  }
+  .note-ing-chip button{background:none;border:none;color:var(--danger);cursor:pointer;font-size:13px;padding:2px 4px;}
+  .note-form-actions{display:flex;gap:8px;margin-top:12px;}
+  .note-save-btn{
+    flex:1;background:var(--green);color:#fff;border:none;padding:11px;border-radius:9px;
+    font-weight:700;cursor:pointer;font-size:14px;
+  }
+  .note-save-btn:active{transform:scale(0.97);}
+  .note-cancel-btn{
+    background:var(--surface);color:var(--ink-soft);border:1px solid var(--line);padding:11px 16px;
+    border-radius:9px;font-weight:600;cursor:pointer;font-size:14px;
+  }
+
+  .note-card{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    padding:14px;margin-bottom:12px;
+  }
+  .note-card h4{margin:0 0 4px;font-size:15px;}
+  .note-card .note-body{font-size:13.5px;color:var(--ink-soft);white-space:pre-wrap;margin:0 0 8px;line-height:1.4;}
+  .note-card .note-ing-list{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;}
+  .note-card .note-ing-tag{
+    background:var(--paper);border:1px solid var(--line);border-radius:999px;
+    padding:3px 10px;font-size:11.5px;color:var(--ink-soft);
+  }
+  .note-card-actions{display:flex;gap:8px;flex-wrap:wrap;}
+  .note-card-actions button{
+    border:none;border-radius:8px;padding:8px 12px;font-size:12.5px;font-weight:600;cursor:pointer;
+  }
+  .note-btn-add{background:var(--green);color:#fff;}
+  .note-btn-edit{background:var(--paper);border:1px solid var(--line) !important;color:var(--ink);}
+  .note-btn-del{background:var(--paper);border:1px solid var(--line) !important;color:var(--danger);}
+  .note-card-actions button:active{transform:scale(0.96);}
+
+  /* ---- Menu tab ---- */
+  .menu-mode-switch{display:flex;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:4px;margin-bottom:14px;}
+  .menu-mode-btn{
+    flex:1;background:none;border:none;padding:9px 6px;border-radius:8px;
+    font-size:12.5px;font-weight:700;cursor:pointer;color:var(--ink-soft);
+  }
+  .menu-mode-btn.active{background:var(--green);color:#fff;}
+  .menu-mode-btn:active{transform:scale(0.97);}
+
+  .fridge-intro{font-size:13px;color:var(--ink-soft);margin:0 0 12px;line-height:1.4;}
+
+  .recipe-card{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    padding:14px;margin-bottom:10px;
+  }
+  .recipe-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px;}
+  .recipe-card h4{margin:0;font-size:15px;flex:1;}
+  .recipe-star-btn{
+    background:none;border:none;font-size:19px;cursor:pointer;padding:0 2px;line-height:1;
+    color:var(--line);flex-shrink:0;
+  }
+  .recipe-star-btn.active{color:var(--amber);}
+  .recipe-star-btn:active{transform:scale(0.9);}
+  .recipe-tag-pill{
+    flex-shrink:0;font-size:10.5px;font-weight:700;color:#fff;padding:3px 9px;border-radius:999px;
+    white-space:nowrap;
+  }
+  .recipe-match{font-size:11.5px;color:var(--green);font-weight:700;margin-bottom:6px;}
+  .recipe-match.partial{color:var(--amber);}
+  .recipe-ing-list{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;}
+  .recipe-ing-tag{
+    background:var(--paper);border:1px solid var(--line);border-radius:999px;
+    padding:3px 10px;font-size:11.5px;color:var(--ink-soft);
+  }
+  .recipe-ing-tag.have{background:#E7F1E9;border-color:var(--green);color:var(--green);}
+  .recipe-ing-tag.missing{background:#FBEFE9;border-color:var(--danger);color:var(--danger);}
+  .recipe-card-actions{display:flex;gap:8px;flex-wrap:wrap;}
+  .recipe-card-actions button{
+    border:none;border-radius:8px;padding:8px 12px;font-size:12.5px;font-weight:600;cursor:pointer;
+  }
+  .recipe-card-actions button:active{transform:scale(0.96);}
 
   /* ---- Card tab ---- */
   .card-wrap{display:flex;flex-direction:column;align-items:center;gap:16px;}
@@ -530,58 +643,99 @@
         </div>
         <p class="persist-note">Le panier reste enregistré tant que tu ne le vides pas — même après plusieurs jours ou en fermant le navigateur.</p>
 
+        <div class="cart-notes-section" id="cart-notes-section">
+          <h3 class="history-title">Notes du panier</h3>
+          <div class="note-ing-row">
+            <input type="text" id="cart-note-new-input" placeholder="ex. ne pas acheter ça, attendre la promo…">
+            <button id="cart-note-add-btn" type="button" style="flex-shrink:0;">+</button>
+          </div>
+          <div id="cart-notes-summary"></div>
+        </div>
+
         <div class="history-section">
           <h3 class="history-title">Historique des courses</h3>
           <div id="history-container"></div>
         </div>
+
+        <p class="room-code-line" id="room-code-line" style="display:none;">
+          Synchronisé avec le code « <span id="room-code-label"></span> » — <button id="change-room-code-btn" type="button">changer</button>
+        </p>
       </div>
     </section>
 
-    <!-- TAB 3 : LOYALTY CARD -->
-    <section class="panel" id="panel-card">
+    <!-- TAB 4 : MENU -->
+    <section class="panel" id="panel-menu">
       <div class="panel-inner">
-        <div class="card-wrap">
 
-          <div id="card-photo-display" style="display:none;width:100%;max-width:340px;">
-            <div class="photo-frame"><img id="card-photo-img" alt="Photo de la carte de fidélité"></div>
-            <div class="card-btn-row" style="margin-top:10px;">
-              <button class="link-btn" id="replace-photo-btn">Remplacer la photo</button>
-              <button class="link-btn" id="remove-photo-btn">Supprimer</button>
-            </div>
-          </div>
-
-          <div id="card-number-display-wrap" style="display:none;width:100%;max-width:340px;">
-            <div class="loyalty-card">
-              <div class="brand">E.Leclerc<small>Carte de fidélité</small></div>
-              <div class="code mono" id="card-number-display"></div>
-            </div>
-            <div class="barcode-panel" style="margin-top:14px;"><svg id="barcode-svg"></svg></div>
-            <div style="text-align:center;margin-top:10px;">
-              <button class="link-btn" id="remove-card-btn">Supprimer cette carte</button>
-            </div>
-          </div>
-
-          <div id="card-form-wrap" style="width:100%;max-width:340px;">
-            <p style="font-size:13px;color:var(--ink-soft);text-align:center;margin-top:0;">
-              Entre le numéro inscrit sous le code-barres pour générer un code scannable, ou importe directement une photo de ta carte.
-            </p>
-            <div class="card-form">
-              <input type="text" id="card-number-input" placeholder="Numéro de carte" inputmode="numeric">
-              <button id="save-card-btn" type="button">Enregistrer le numéro</button>
-            </div>
-            <div class="divider">ou</div>
-            <label class="file-btn" for="card-photo-input">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-              Importer une photo de la carte
-            </label>
-            <input type="file" id="card-photo-input" accept="image/*" capture="environment" style="display:none;">
-          </div>
-
-          <p class="room-code-line" id="room-code-line" style="display:none;">
-            Synchronisé avec le code « <span id="room-code-label"></span> » — <button id="change-room-code-btn" type="button">changer</button>
-          </p>
-
+        <div class="menu-mode-switch">
+          <button class="menu-mode-btn active" id="menu-mode-browse-btn" type="button">📖 Idées</button>
+          <button class="menu-mode-btn" id="menu-mode-fav-btn" type="button">⭐ Favoris</button>
+          <button class="menu-mode-btn" id="menu-mode-fridge-btn" type="button">🧊 Frigo</button>
         </div>
+
+        <!-- Mode A : parcourir les idées -->
+        <div id="menu-browse-view">
+          <button class="detect-btn" id="open-recipe-form-btn" type="button">+ Créer ma propre recette</button>
+
+          <div class="note-form" id="recipe-form" style="display:none;">
+            <h3 class="note-form-title" id="recipe-form-title">Nouvelle recette</h3>
+            <div class="field" style="margin-bottom:8px;">
+              <label for="recipe-name-input">Nom de la recette</label>
+              <input type="text" id="recipe-name-input" placeholder="ex. Gratin de ma grand-mère">
+            </div>
+            <div class="field" style="margin-bottom:8px;">
+              <label for="recipe-desc-input">Description (facultatif)</label>
+              <textarea id="recipe-desc-input" rows="2" placeholder="ex. poulet, riz, curry, lait de coco…"></textarea>
+            </div>
+            <div class="field" style="margin-bottom:10px;">
+              <label for="recipe-tag-select">Catégorie</label>
+              <select id="recipe-tag-select"></select>
+            </div>
+
+            <button class="detect-btn" id="detect-recipe-ing-btn" type="button">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              Détecter les ingrédients depuis le texte
+            </button>
+
+            <label style="font-size:11px;color:var(--ink-soft);letter-spacing:0.03em;">Ingrédients</label>
+            <div class="note-ing-row">
+              <input type="text" id="recipe-ing-name" placeholder="ex. Courgettes">
+              <select id="recipe-ing-rayon"></select>
+              <button id="recipe-ing-add-btn" type="button">+</button>
+            </div>
+            <div class="note-ing-chips" id="recipe-ing-chips"></div>
+
+            <div class="note-form-actions">
+              <button class="note-save-btn" id="recipe-save-btn" type="button">Enregistrer la recette</button>
+              <button class="note-cancel-btn" id="recipe-cancel-btn" type="button">Annuler</button>
+            </div>
+          </div>
+
+          <input type="text" class="search-box" id="menu-search-box" placeholder="Chercher une recette ou un ingrédient…">
+          <div class="quick-nav" id="menu-tag-nav" style="position:static;"></div>
+          <div id="menu-browse-results"></div>
+        </div>
+
+        <!-- Mode Favoris -->
+        <div id="menu-fav-view" style="display:none;">
+          <div id="menu-fav-results"></div>
+        </div>
+
+        <!-- Mode Frigo -->
+        <div id="menu-fridge-view" style="display:none;">
+          <p class="fridge-intro">Liste ce que tu as sous la main, une virgule ou un ingrédient à la fois — je te propose ce que tu peux cuisiner avec.</p>
+          <div class="note-ing-row">
+            <input type="text" id="fridge-ing-input" placeholder="ex. poulet, riz, tomates">
+            <button id="fridge-ing-add-btn" type="button">+</button>
+          </div>
+          <div class="note-ing-chips" id="fridge-ing-chips"></div>
+          <button class="detect-btn" id="fridge-find-btn" type="button" style="margin-top:12px;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            Trouver des idées avec ça
+          </button>
+          <div id="menu-fridge-results" style="margin-top:14px;"></div>
+        </div>
+
       </div>
     </section>
   </main>
@@ -596,9 +750,9 @@
       Panier
       <span class="tab-badge" id="cart-badge" style="display:none;">0</span>
     </button>
-    <button class="tab-btn" data-tab="card">
-      <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2.5"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-      Carte
+    <button class="tab-btn" data-tab="menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      Menu
     </button>
   </nav>
 
@@ -695,19 +849,450 @@
   function colorFor(rayon){ return RAYON_COLORS[rayon] || "#6B6456"; }
 
   var DEFAULT_ITEMS_BY_RAYON = {
-    "Fruits & Légumes":["Tomates","Pommes de terre","Oignons","Carottes","Salade","Bananes","Pommes","Citrons","Ail","Courgettes","Poivrons","Avocats","Champignons de Paris","Persil","Melon","Pêches","Tomates cerises","Concombre","Ciboule / oignons nouveaux","Radis"],
+    "Fruits & Légumes":["Tomates","Pommes de terre","Oignons","Carottes","Salade","Bananes","Pommes","Citrons","Ail","Courgettes","Poivrons","Avocats","Champignons de Paris","Persil","Melon","Pêches","Tomates cerises","Concombre","Ciboule / oignons nouveaux","Radis","Gingembre","Aubergine","Brocoli","Poireaux","Céleri branche","Épinards frais","Citron vert"],
     "Boucherie & Volaille":["Blancs de poulet","Steak haché","Escalopes de dinde","Merguez","Saucisses de Toulouse","Côtes de porc","Jambon blanc","Bacon","Lardons","Chorizo","Rôti de bœuf","Chipolatas","Filets de poulet panés (frais)","Fuet / saucisson sec","Steaks hachés spécial burger"],
     "Poissonnerie":["Filets de saumon","Cabillaud","Crevettes","Thon en boîte","Moules","Bâtonnets de poisson panés","Saumon fumé","Sardines","Sushi"],
-    "Traiteur & Saurisserie":["Tzatziki","Truite fumée"],
-    "Crèmerie & Œufs":["Lait demi-écrémé","Yaourts nature","Beurre doux","Beurre demi-sel","Œufs","Crème fraîche","Fromage râpé","Camembert","Emmental","Comté","Fromage blanc","Mozzarella","Feta","Parmesan râpé","Margarine","Fromage à tartiner","Yaourts à boire"],
-    "Boulangerie & Pâtisserie":["Baguette","Pain de mie","Croissants","Pain aux raisins","Brioche","Pain complet","Biscottes","Pains au lait","Gâche","Pain pita","Pain sans gluten","Pains à burger"],
-    "Épicerie salée":["Pâtes","Riz","Semoule","Sauce tomate","Huile d'olive","Huile de tournesol","Vinaigre balsamique","Moutarde","Mayonnaise","Ketchup","Haricots verts en boîte","Maïs en boîte","Bouillon cube","Farine","Sel","Poivre","Pistaches grillées salées","Riz sushi","Riz basmati","Olives noires","Tapenade","Tomates séchées","Épices guacamole","Crackers TUC","Lait de coco","Nouilles de riz","Chips apéritif","Sauce soja","Sauce barbecue","Vinaigrette"],
-    "Épicerie sucrée":["Céréales","Confiture","Pâte à tartiner","Miel","Biscuits sablés","Chocolat noir","Chocolat au lait","Sucre en poudre","Compotes","Barres de céréales","Madeleines","Nutella","Flocons d'avoine","Gourdes de compote","Galettes de maïs"],
+    "Traiteur & Saurisserie":["Tzatziki","Truite fumée","Rillettes"],
+    "Crèmerie & Œufs":["Lait demi-écrémé","Yaourts nature","Beurre doux","Beurre demi-sel","Œufs","Crème fraîche","Crème liquide","Fromage râpé","Camembert","Emmental","Comté","Fromage blanc","Mozzarella","Feta","Parmesan râpé","Margarine","Fromage à tartiner","Yaourts à boire"],
+    "Boulangerie & Pâtisserie":["Baguette","Pain de mie","Croissants","Pain aux raisins","Brioche","Pain complet","Biscottes","Pains au lait","Gâche","Pain pita","Pain sans gluten","Pains à burger","Blinis"],
+    "Épicerie salée":["Pâtes","Riz","Semoule","Sauce tomate","Huile d'olive","Huile de tournesol","Vinaigre balsamique","Moutarde","Mayonnaise","Ketchup","Haricots verts en boîte","Maïs en boîte","Bouillon cube","Farine","Sel","Poivre","Pistaches grillées salées","Riz sushi","Riz basmati","Olives noires","Tapenade","Tomates séchées","Épices guacamole","Crackers TUC","Lait de coco","Nouilles de riz","Chips apéritif","Sauce soja","Sauce barbecue","Vinaigrette","Curry (épice)","Cumin","Paprika","Curcuma","Cannelle","Coriandre (épice)","Basilic","Lentilles","Pois chiches","Haricots blancs en boîte","Chapelure","Couscous","Levure chimique","Houmous","Noix de cajou","Levure boulangère"],
+    "Épicerie sucrée":["Céréales","Confiture","Pâte à tartiner","Miel","Biscuits sablés","Chocolat noir","Chocolat au lait","Sucre en poudre","Compotes","Barres de céréales","Madeleines","Nutella","Flocons d'avoine","Gourdes de compote","Galettes de maïs","Amandes effilées","Extrait de vanille","Raisins secs","Sirop d'érable"],
     "Surgelés":["Frites surgelées","Légumes surgelés mélangés","Pizza surgelée","Glace vanille","Épinards hachés surgelés","Nuggets de poulet","Fruits rouges surgelés","Steak haché surgelé"],
-    "Boissons":["Eau plate","Eau gazeuse","Jus d'orange","Soda cola","Café moulu","Thé","Vin rouge","Bière","Sirop de menthe","Lait végétal","Red Bull","Thé glacé pêche","Pastis"],
+    "Boissons":["Eau plate","Eau gazeuse","Jus d'orange","Soda cola","Café moulu","Thé","Vin rouge","Vin blanc","Bière","Sirop de menthe","Lait végétal","Red Bull","Thé glacé pêche","Pastis"],
     "Hygiène & Beauté":["Dentifrice","Brosses à dents","Gel douche","Shampooing","Déodorant","Papier toilette","Mouchoirs","Rasoirs","Coton-tiges","Crème hydratante","Serviettes hygiéniques","Protège-slips"],
     "Entretien & Maison":["Liquide vaisselle","Lessive","Éponges","Sacs poubelle","Essuie-tout","Nettoyant multi-usage","Javel","Assouplissant","Sacs congélation","Bicarbonate de soude","Cristaux de soude","Liquide de rinçage lave-vaisselle","Désodorisant d'intérieur"]
   };
+
+  /* ---------------- reconnaissance d'ingrédients dans un texte libre ----------------
+     Dictionnaire volontairement écrit en mots simples (comme on parle d'une recette),
+     indépendant des noms exacts du catalogue. Trié par longueur de clé décroissante
+     à l'usage pour que "pomme de terre" soit reconnu avant "pomme" par exemple. */
+  var INGREDIENT_KEYWORDS = {
+    "tomates":{name:"Tomates", rayon:"Fruits & Légumes"}, "tomate":{name:"Tomates", rayon:"Fruits & Légumes"},
+    "tomates cerises":{name:"Tomates cerises", rayon:"Fruits & Légumes"},
+    "oignons":{name:"Oignons", rayon:"Fruits & Légumes"}, "oignon":{name:"Oignons", rayon:"Fruits & Légumes"},
+    "ail":{name:"Ail", rayon:"Fruits & Légumes"},
+    "carottes":{name:"Carottes", rayon:"Fruits & Légumes"}, "carotte":{name:"Carottes", rayon:"Fruits & Légumes"},
+    "pommes de terre":{name:"Pommes de terre", rayon:"Fruits & Légumes"}, "pomme de terre":{name:"Pommes de terre", rayon:"Fruits & Légumes"},
+    "patates":{name:"Pommes de terre", rayon:"Fruits & Légumes"}, "patate":{name:"Pommes de terre", rayon:"Fruits & Légumes"},
+    "courgettes":{name:"Courgettes", rayon:"Fruits & Légumes"}, "courgette":{name:"Courgettes", rayon:"Fruits & Légumes"},
+    "poivrons":{name:"Poivrons", rayon:"Fruits & Légumes"}, "poivron":{name:"Poivrons", rayon:"Fruits & Légumes"},
+    "champignons":{name:"Champignons de Paris", rayon:"Fruits & Légumes"}, "champignon":{name:"Champignons de Paris", rayon:"Fruits & Légumes"},
+    "avocats":{name:"Avocats", rayon:"Fruits & Légumes"}, "avocat":{name:"Avocats", rayon:"Fruits & Légumes"},
+    "citrons":{name:"Citrons", rayon:"Fruits & Légumes"}, "citron":{name:"Citrons", rayon:"Fruits & Légumes"},
+    "bananes":{name:"Bananes", rayon:"Fruits & Légumes"}, "banane":{name:"Bananes", rayon:"Fruits & Légumes"},
+    "pommes":{name:"Pommes", rayon:"Fruits & Légumes"},
+    "salade":{name:"Salade", rayon:"Fruits & Légumes"},
+    "persil":{name:"Persil", rayon:"Fruits & Légumes"},
+    "concombre":{name:"Concombre", rayon:"Fruits & Légumes"},
+    "radis":{name:"Radis", rayon:"Fruits & Légumes"},
+    "melon":{name:"Melon", rayon:"Fruits & Légumes"},
+    "peches":{name:"Pêches", rayon:"Fruits & Légumes"}, "peche":{name:"Pêches", rayon:"Fruits & Légumes"},
+    "gingembre":{name:"Gingembre", rayon:"Fruits & Légumes"},
+
+    "poulet":{name:"Blancs de poulet", rayon:"Boucherie & Volaille"},
+    "boeuf hache":{name:"Steak haché", rayon:"Boucherie & Volaille"}, "boeuf":{name:"Steak haché", rayon:"Boucherie & Volaille"},
+    "steak hache":{name:"Steak haché", rayon:"Boucherie & Volaille"},
+    "dinde":{name:"Escalopes de dinde", rayon:"Boucherie & Volaille"},
+    "porc":{name:"Côtes de porc", rayon:"Boucherie & Volaille"},
+    "merguez":{name:"Merguez", rayon:"Boucherie & Volaille"},
+    "saucisses":{name:"Saucisses de Toulouse", rayon:"Boucherie & Volaille"}, "saucisse":{name:"Saucisses de Toulouse", rayon:"Boucherie & Volaille"},
+    "jambon":{name:"Jambon blanc", rayon:"Boucherie & Volaille"},
+    "bacon":{name:"Bacon", rayon:"Boucherie & Volaille"},
+    "lardons":{name:"Lardons", rayon:"Boucherie & Volaille"},
+    "chorizo":{name:"Chorizo", rayon:"Boucherie & Volaille"},
+    "chipolatas":{name:"Chipolatas", rayon:"Boucherie & Volaille"},
+
+    "saumon":{name:"Filets de saumon", rayon:"Poissonnerie"},
+    "cabillaud":{name:"Cabillaud", rayon:"Poissonnerie"},
+    "crevettes":{name:"Crevettes", rayon:"Poissonnerie"}, "crevette":{name:"Crevettes", rayon:"Poissonnerie"},
+    "thon":{name:"Thon en boîte", rayon:"Poissonnerie"},
+    "moules":{name:"Moules", rayon:"Poissonnerie"},
+    "sardines":{name:"Sardines", rayon:"Poissonnerie"},
+    "sushi":{name:"Sushi", rayon:"Poissonnerie"},
+
+    "tzatziki":{name:"Tzatziki", rayon:"Traiteur & Saurisserie"},
+    "truite fumee":{name:"Truite fumée", rayon:"Traiteur & Saurisserie"},
+
+    "lait de coco":{name:"Lait de coco", rayon:"Épicerie salée"},
+    "lait":{name:"Lait demi-écrémé", rayon:"Crèmerie & Œufs"},
+    "yaourts":{name:"Yaourts nature", rayon:"Crèmerie & Œufs"}, "yaourt":{name:"Yaourts nature", rayon:"Crèmerie & Œufs"},
+    "beurre":{name:"Beurre doux", rayon:"Crèmerie & Œufs"},
+    "oeufs":{name:"Œufs", rayon:"Crèmerie & Œufs"}, "oeuf":{name:"Œufs", rayon:"Crèmerie & Œufs"},
+    "creme fraiche":{name:"Crème fraîche", rayon:"Crèmerie & Œufs"}, "creme":{name:"Crème fraîche", rayon:"Crèmerie & Œufs"},
+    "fromage rape":{name:"Fromage râpé", rayon:"Crèmerie & Œufs"},
+    "camembert":{name:"Camembert", rayon:"Crèmerie & Œufs"},
+    "emmental":{name:"Emmental", rayon:"Crèmerie & Œufs"},
+    "comte":{name:"Comté", rayon:"Crèmerie & Œufs"},
+    "mozzarella":{name:"Mozzarella", rayon:"Crèmerie & Œufs"},
+    "feta":{name:"Feta", rayon:"Crèmerie & Œufs"},
+    "parmesan":{name:"Parmesan râpé", rayon:"Crèmerie & Œufs"},
+    "margarine":{name:"Margarine", rayon:"Crèmerie & Œufs"},
+
+    "baguette":{name:"Baguette", rayon:"Boulangerie & Pâtisserie"},
+    "pain de mie":{name:"Pain de mie", rayon:"Boulangerie & Pâtisserie"},
+    "pain pita":{name:"Pain pita", rayon:"Boulangerie & Pâtisserie"},
+    "pain":{name:"Baguette", rayon:"Boulangerie & Pâtisserie"},
+
+    "pates":{name:"Pâtes", rayon:"Épicerie salée"},
+    "riz basmati":{name:"Riz basmati", rayon:"Épicerie salée"}, "riz":{name:"Riz", rayon:"Épicerie salée"},
+    "semoule":{name:"Semoule", rayon:"Épicerie salée"},
+    "curry":{name:"Curry (épice)", rayon:"Épicerie salée"},
+    "cumin":{name:"Cumin", rayon:"Épicerie salée"},
+    "paprika":{name:"Paprika", rayon:"Épicerie salée"},
+    "curcuma":{name:"Curcuma", rayon:"Épicerie salée"},
+    "cannelle":{name:"Cannelle", rayon:"Épicerie salée"},
+    "coriandre":{name:"Coriandre (épice)", rayon:"Épicerie salée"},
+    "basilic":{name:"Basilic", rayon:"Épicerie salée"},
+    "huile d'olive":{name:"Huile d'olive", rayon:"Épicerie salée"},
+    "sauce tomate":{name:"Sauce tomate", rayon:"Épicerie salée"},
+    "sauce soja":{name:"Sauce soja", rayon:"Épicerie salée"},
+    "sauce barbecue":{name:"Sauce barbecue", rayon:"Épicerie salée"},
+    "vinaigrette":{name:"Vinaigrette", rayon:"Épicerie salée"},
+    "moutarde":{name:"Moutarde", rayon:"Épicerie salée"},
+    "mayonnaise":{name:"Mayonnaise", rayon:"Épicerie salée"},
+    "farine":{name:"Farine", rayon:"Épicerie salée"},
+    "olives":{name:"Olives noires", rayon:"Épicerie salée"}, "olive":{name:"Olives noires", rayon:"Épicerie salée"},
+    "nouilles de riz":{name:"Nouilles de riz", rayon:"Épicerie salée"},
+
+    "chocolat":{name:"Chocolat noir", rayon:"Épicerie sucrée"},
+    "sucre":{name:"Sucre en poudre", rayon:"Épicerie sucrée"},
+    "miel":{name:"Miel", rayon:"Épicerie sucrée"},
+    "flocons d'avoine":{name:"Flocons d'avoine", rayon:"Épicerie sucrée"},
+
+    "frites":{name:"Frites surgelées", rayon:"Surgelés"},
+    "glace":{name:"Glace vanille", rayon:"Surgelés"},
+
+    "vin":{name:"Vin rouge", rayon:"Boissons"},
+    "biere":{name:"Bière", rayon:"Boissons"}
+  };
+
+  function normalizeAccents(str){
+    return String(str).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  }
+  function escapeRegex(str){
+    return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  }
+  function detectIngredientsFromText(text){
+    var working = " " + normalizeAccents(text) + " ";
+    var keys = Object.keys(INGREDIENT_KEYWORDS).sort(function(a,b){ return b.length - a.length; });
+    var matches = [];
+    keys.forEach(function(key){
+      var pattern = new RegExp("(^|[^a-z0-9\u00e0-\u00ff])" + escapeRegex(key) + "($|[^a-z0-9\u00e0-\u00ff])");
+      if(pattern.test(working)){
+        matches.push(INGREDIENT_KEYWORDS[key]);
+        working = working.replace(new RegExp(escapeRegex(key), "g"), " ");
+      }
+    });
+    var seen = {};
+    var result = [];
+    matches.forEach(function(m){
+      var k = m.rayon + "||" + m.name;
+      if(!seen[k]){ seen[k] = true; result.push(m); }
+    });
+    return result;
+  }
+
+  /* ---------------- base de recettes (onglet Menu) ----------------
+     Chaque ingrédient reprend, autant que possible, un nom exact du catalogue de
+     rayons ci-dessus, pour que le rayon se résolve automatiquement et que les
+     ingrédients s'ajoutent au panier exactement comme n'importe quel autre article. */
+  var TAG_COLORS = {
+    "Rapide":"#C97A2E", "Familial":"#3E7A48", "Végétarien":"#6B7A3A", "Poisson":"#2C6E7F",
+    "Monde":"#6A4C93", "Mijoté":"#8A5A34", "Pâtes & riz":"#B08A15", "Salade & léger":"#4FA3A0",
+    "Apéro & tapas":"#9C4F6B", "Brunch & petit-déj":"#D9A441", "Dessert":"#C2447A"
+  };
+  function tagColor(tag){ return TAG_COLORS[tag] || "#6B6456"; }
+
+  var RECIPE_DATABASE = [
+    // --- Rapide ---
+    {name:"Omelette aux fines herbes", tag:"Rapide", ingredients:["Œufs","Persil","Beurre doux","Sel","Poivre"]},
+    {name:"Croque-monsieur", tag:"Rapide", ingredients:["Pain de mie","Jambon blanc","Emmental","Beurre doux"]},
+    {name:"Pâtes au thon", tag:"Rapide", ingredients:["Pâtes","Thon en boîte","Tomates","Huile d'olive","Ail"]},
+    {name:"Wrap poulet crudités", tag:"Rapide", ingredients:["Pain pita","Blancs de poulet","Salade","Tomates","Mayonnaise"]},
+    {name:"Toast avocat-œuf", tag:"Rapide", ingredients:["Pain complet","Avocats","Œufs","Citrons"]},
+    {name:"Salade de thon express", tag:"Rapide", ingredients:["Thon en boîte","Maïs en boîte","Tomates","Concombre","Vinaigrette"]},
+    {name:"Sandwich club", tag:"Rapide", ingredients:["Pain de mie","Jambon blanc","Œufs","Salade","Mayonnaise"]},
+    {name:"Riz sauté aux légumes", tag:"Rapide", ingredients:["Riz","Légumes surgelés mélangés","Sauce soja","Œufs","Ail"]},
+    {name:"Nouilles sautées au poulet", tag:"Rapide", ingredients:["Nouilles de riz","Blancs de poulet","Sauce soja","Carottes","Gingembre"]},
+    {name:"Pizza surgelée améliorée", tag:"Rapide", ingredients:["Pizza surgelée","Tomates cerises","Olives noires","Basilic"]},
+    {name:"Œufs brouillés épinards", tag:"Rapide", ingredients:["Œufs","Épinards frais","Beurre doux"]},
+
+    // --- Familial ---
+    {name:"Poulet rôti pommes de terre", tag:"Familial", ingredients:["Blancs de poulet","Pommes de terre","Ail","Huile d'olive","Persil"]},
+    {name:"Steak haché purée maison", tag:"Familial", ingredients:["Steak haché","Pommes de terre","Beurre doux","Lait demi-écrémé"]},
+    {name:"Gratin dauphinois au jambon", tag:"Familial", ingredients:["Pommes de terre","Jambon blanc","Crème liquide","Fromage râpé"]},
+    {name:"Hachis parmentier", tag:"Familial", ingredients:["Steak haché","Pommes de terre","Oignons","Fromage râpé"]},
+    {name:"Chili con carne", tag:"Familial", ingredients:["Steak haché","Haricots blancs en boîte","Tomates","Maïs en boîte","Cumin","Paprika"]},
+    {name:"Blanquette de dinde", tag:"Familial", ingredients:["Escalopes de dinde","Carottes","Champignons de Paris","Crème fraîche","Riz"]},
+    {name:"Rôti de porc aux pommes", tag:"Familial", ingredients:["Côtes de porc","Pommes","Oignons","Miel"]},
+    {name:"Saucisses-lentilles", tag:"Familial", ingredients:["Saucisses de Toulouse","Lentilles","Carottes","Oignons"]},
+    {name:"Tartiflette", tag:"Familial", ingredients:["Pommes de terre","Lardons","Oignons","Fromage râpé","Crème fraîche"]},
+    {name:"Burger maison", tag:"Familial", ingredients:["Steaks hachés spécial burger","Pains à burger","Fromage râpé","Salade","Tomates","Ketchup"]},
+
+    // --- Végétarien ---
+    {name:"Curry de légumes", tag:"Végétarien", ingredients:["Courgettes","Poivrons","Lait de coco","Curry (épice)","Riz"]},
+    {name:"Ratatouille", tag:"Végétarien", ingredients:["Aubergine","Courgettes","Poivrons","Tomates","Ail","Huile d'olive"]},
+    {name:"Dahl de lentilles", tag:"Végétarien", ingredients:["Lentilles","Curcuma","Cumin","Oignons","Lait de coco"]},
+    {name:"Falafels & houmous maison", tag:"Végétarien", ingredients:["Pois chiches","Ail","Cumin","Citrons"]},
+    {name:"Poêlée de brocoli au parmesan", tag:"Végétarien", ingredients:["Brocoli","Parmesan râpé","Huile d'olive","Ail"]},
+    {name:"Omelette aux champignons", tag:"Végétarien", ingredients:["Œufs","Champignons de Paris","Persil","Beurre doux"]},
+    {name:"Couscous végétarien", tag:"Végétarien", ingredients:["Couscous","Pois chiches","Courgettes","Carottes","Curcuma"]},
+    {name:"Salade de pâtes tomates-feta", tag:"Végétarien", ingredients:["Pâtes","Tomates cerises","Feta","Olives noires","Basilic"]},
+    {name:"Tarte aux poireaux", tag:"Végétarien", ingredients:["Poireaux","Œufs","Crème liquide","Fromage râpé"]},
+    {name:"Riz cantonais végétarien", tag:"Végétarien", ingredients:["Riz","Œufs","Légumes surgelés mélangés","Sauce soja","Carottes"]},
+
+    // --- Poisson ---
+    {name:"Saumon grillé & brocoli", tag:"Poisson", ingredients:["Filets de saumon","Brocoli","Citrons","Huile d'olive"]},
+    {name:"Cabillaud sauce citron", tag:"Poisson", ingredients:["Cabillaud","Citrons","Beurre doux","Persil"]},
+    {name:"Pâtes aux crevettes", tag:"Poisson", ingredients:["Pâtes","Crevettes","Ail","Crème liquide","Persil"]},
+    {name:"Moules marinières", tag:"Poisson", ingredients:["Moules","Vin blanc","Oignons","Crème fraîche","Persil"]},
+    {name:"Poke bowl saumon", tag:"Poisson", ingredients:["Riz sushi","Saumon fumé","Avocats","Concombre","Sauce soja"]},
+    {name:"Salade niçoise", tag:"Poisson", ingredients:["Thon en boîte","Œufs","Tomates","Olives noires","Salade"]},
+    {name:"Tartare de saumon", tag:"Poisson", ingredients:["Filets de saumon","Citron vert","Avocats","Ciboule / oignons nouveaux"]},
+    {name:"Fish and chips maison", tag:"Poisson", ingredients:["Bâtonnets de poisson panés","Frites surgelées","Citrons"]},
+
+    // --- Monde ---
+    {name:"Poulet curry coco", tag:"Monde", ingredients:["Blancs de poulet","Curry (épice)","Lait de coco","Oignons","Riz"]},
+    {name:"Tacos de bœuf", tag:"Monde", ingredients:["Steak haché","Tomates","Salade","Fromage râpé","Paprika"]},
+    {name:"Poulet tikka masala", tag:"Monde", ingredients:["Blancs de poulet","Yaourts nature","Curcuma","Tomates","Crème liquide"]},
+    {name:"Pad thaï au poulet", tag:"Monde", ingredients:["Nouilles de riz","Blancs de poulet","Œufs","Sauce soja","Citron vert"]},
+    {name:"Tajine de poulet", tag:"Monde", ingredients:["Blancs de poulet","Citrons","Olives noires","Cumin","Oignons"]},
+    {name:"Chili sin carne", tag:"Monde", ingredients:["Haricots blancs en boîte","Pois chiches","Tomates","Maïs en boîte","Cumin"]},
+    {name:"Risotto aux champignons", tag:"Monde", ingredients:["Riz","Champignons de Paris","Parmesan râpé","Vin blanc","Beurre doux"]},
+    {name:"Bo bun végétarien", tag:"Monde", ingredients:["Nouilles de riz","Carottes","Concombre","Sauce soja","Citron vert"]},
+    {name:"Shakshuka", tag:"Monde", ingredients:["Œufs","Tomates","Poivrons","Oignons","Paprika"]},
+    {name:"Ceviche de saumon", tag:"Monde", ingredients:["Filets de saumon","Citron vert","Oignons","Concombre"]},
+
+    // --- Mijoté ---
+    {name:"Bœuf bourguignon", tag:"Mijoté", ingredients:["Rôti de bœuf","Carottes","Champignons de Paris","Vin rouge","Oignons"]},
+    {name:"Pot-au-feu", tag:"Mijoté", ingredients:["Rôti de bœuf","Carottes","Poireaux","Pommes de terre","Céleri branche"]},
+    {name:"Soupe à l'oignon gratinée", tag:"Mijoté", ingredients:["Oignons","Bouillon cube","Baguette","Fromage râpé"]},
+    {name:"Poule au pot", tag:"Mijoté", ingredients:["Blancs de poulet","Carottes","Poireaux","Céleri branche","Pommes de terre"]},
+    {name:"Cassoulet", tag:"Mijoté", ingredients:["Saucisses de Toulouse","Haricots blancs en boîte","Lardons","Tomates"]},
+    {name:"Velouté de courgettes", tag:"Mijoté", ingredients:["Courgettes","Pommes de terre","Crème fraîche","Bouillon cube"]},
+    {name:"Soupe de lentilles", tag:"Mijoté", ingredients:["Lentilles","Carottes","Oignons","Cumin"]},
+    {name:"Gratin de brocoli", tag:"Mijoté", ingredients:["Brocoli","Crème liquide","Fromage râpé","Chapelure"]},
+
+    // --- Pâtes & riz ---
+    {name:"Spaghetti bolognaise", tag:"Pâtes & riz", ingredients:["Pâtes","Steak haché","Sauce tomate","Oignons","Parmesan râpé"]},
+    {name:"Carbonara", tag:"Pâtes & riz", ingredients:["Pâtes","Lardons","Œufs","Parmesan râpé","Poivre"]},
+    {name:"Pâtes au pesto", tag:"Pâtes & riz", ingredients:["Pâtes","Basilic","Parmesan râpé","Huile d'olive"]},
+    {name:"Riz cantonais au jambon", tag:"Pâtes & riz", ingredients:["Riz","Jambon blanc","Œufs","Légumes surgelés mélangés","Sauce soja"]},
+    {name:"Lasagnes", tag:"Pâtes & riz", ingredients:["Pâtes","Steak haché","Sauce tomate","Fromage râpé","Crème liquide"]},
+    {name:"Paella", tag:"Pâtes & riz", ingredients:["Riz","Crevettes","Blancs de poulet","Tomates","Poivrons"]},
+    {name:"Pâtes au saumon fumé", tag:"Pâtes & riz", ingredients:["Pâtes","Saumon fumé","Crème liquide","Citrons","Persil"]},
+    {name:"Risotto crevettes-citron", tag:"Pâtes & riz", ingredients:["Riz","Crevettes","Citrons","Parmesan râpé"]},
+
+    // --- Salade & léger ---
+    {name:"Salade César", tag:"Salade & léger", ingredients:["Salade","Blancs de poulet","Parmesan râpé","Pain de mie"]},
+    {name:"Salade grecque", tag:"Salade & léger", ingredients:["Tomates","Concombre","Feta","Olives noires","Oignons"]},
+    {name:"Salade avocat-crevettes", tag:"Salade & léger", ingredients:["Avocats","Crevettes","Citron vert","Salade"]},
+    {name:"Taboulé", tag:"Salade & léger", ingredients:["Semoule","Persil","Tomates","Citrons","Concombre"]},
+    {name:"Salade de pois chiches", tag:"Salade & léger", ingredients:["Pois chiches","Tomates cerises","Concombre","Feta","Citrons"]},
+    {name:"Bowl semoule aux légumes", tag:"Salade & léger", ingredients:["Semoule","Courgettes","Poivrons","Feta"]},
+
+    // --- Rapide (suite) ---
+    {name:"Galette jambon-fromage maison", tag:"Rapide", ingredients:["Farine","Œufs","Lait demi-écrémé","Jambon blanc","Emmental"]},
+    {name:"Tartine saumon fumé", tag:"Rapide", ingredients:["Pain complet","Saumon fumé","Fromage à tartiner","Citrons"]},
+    {name:"Houmous & bâtonnets de carottes", tag:"Rapide", ingredients:["Houmous","Carottes"]},
+    {name:"Toast rillettes", tag:"Rapide", ingredients:["Baguette","Rillettes"]},
+    {name:"Nouilles instantanées maison", tag:"Rapide", ingredients:["Nouilles de riz","Bouillon cube","Œufs","Ciboule / oignons nouveaux"]},
+    {name:"Salade caprese", tag:"Rapide", ingredients:["Mozzarella","Tomates","Basilic","Huile d'olive"]},
+
+    // --- Familial (suite) ---
+    {name:"Poulet basquaise", tag:"Familial", ingredients:["Blancs de poulet","Poivrons","Tomates","Oignons"]},
+    {name:"Sauté de porc aux légumes", tag:"Familial", ingredients:["Côtes de porc","Poivrons","Oignons","Sauce soja"]},
+    {name:"Escalopes de dinde à la crème", tag:"Familial", ingredients:["Escalopes de dinde","Crème fraîche","Champignons de Paris"]},
+    {name:"Rôti de bœuf aux carottes", tag:"Familial", ingredients:["Rôti de bœuf","Carottes","Oignons","Bouillon cube"]},
+    {name:"Petits farcis provençaux", tag:"Familial", ingredients:["Courgettes","Tomates","Steak haché","Riz"]},
+    {name:"Croque au poulet", tag:"Familial", ingredients:["Pain de mie","Blancs de poulet","Emmental","Beurre doux"]},
+
+    // --- Végétarien (suite) ---
+    {name:"Curry de pois chiches", tag:"Végétarien", ingredients:["Pois chiches","Tomates","Curry (épice)","Lait de coco"]},
+    {name:"Poêlée d'aubergines à l'ail", tag:"Végétarien", ingredients:["Aubergine","Ail","Huile d'olive","Persil"]},
+    {name:"Gratin de courgettes", tag:"Végétarien", ingredients:["Courgettes","Crème liquide","Fromage râpé","Chapelure"]},
+    {name:"Galettes de pois chiches", tag:"Végétarien", ingredients:["Pois chiches","Cumin","Farine","Œufs"]},
+    {name:"Salade de lentilles tièdes", tag:"Végétarien", ingredients:["Lentilles","Tomates","Oignons","Vinaigrette"]},
+    {name:"Poivrons farcis au riz", tag:"Végétarien", ingredients:["Poivrons","Riz","Tomates","Fromage râpé"]},
+    {name:"Curry d'aubergines", tag:"Végétarien", ingredients:["Aubergine","Lait de coco","Curry (épice)","Riz"]},
+    {name:"Omelette au fromage", tag:"Végétarien", ingredients:["Œufs","Fromage râpé","Persil"]},
+    {name:"Houmous maison & pain pita", tag:"Végétarien", ingredients:["Pois chiches","Ail","Citrons","Pain pita"]},
+
+    // --- Poisson (suite) ---
+    {name:"Cabillaud à la provençale", tag:"Poisson", ingredients:["Cabillaud","Tomates","Olives noires","Basilic"]},
+    {name:"Saumon teriyaki", tag:"Poisson", ingredients:["Filets de saumon","Sauce soja","Miel","Gingembre"]},
+    {name:"Salade de saumon fumé & avocat", tag:"Poisson", ingredients:["Saumon fumé","Avocats","Citrons","Salade"]},
+    {name:"Spaghetti aux fruits de mer", tag:"Poisson", ingredients:["Pâtes","Moules","Crevettes","Ail","Persil"]},
+    {name:"Papillote de cabillaud aux légumes", tag:"Poisson", ingredients:["Cabillaud","Courgettes","Carottes","Citrons"]},
+    {name:"Rillettes de thon maison", tag:"Poisson", ingredients:["Thon en boîte","Fromage blanc","Citrons"]},
+
+    // --- Monde (suite) ---
+    {name:"Sushi maison", tag:"Monde", ingredients:["Riz sushi","Saumon fumé","Avocats","Concombre"]},
+    {name:"Poke bowl thon épicé", tag:"Monde", ingredients:["Riz","Thon en boîte","Avocats","Sauce soja","Concombre"]},
+    {name:"Curry vert thaï au poulet", tag:"Monde", ingredients:["Blancs de poulet","Lait de coco","Curry (épice)","Poivrons"]},
+    {name:"Moussaka", tag:"Monde", ingredients:["Aubergine","Steak haché","Sauce tomate","Fromage râpé"]},
+    {name:"Fajitas au poulet", tag:"Monde", ingredients:["Blancs de poulet","Poivrons","Oignons","Pain pita"]},
+    {name:"Poulet au paprika (goulash)", tag:"Monde", ingredients:["Blancs de poulet","Paprika","Oignons","Crème fraîche"]},
+    {name:"Bibimbap simplifié", tag:"Monde", ingredients:["Riz","Carottes","Épinards frais","Œufs","Sauce soja"]},
+    {name:"Ramen maison", tag:"Monde", ingredients:["Nouilles de riz","Bouillon cube","Œufs","Blancs de poulet","Ciboule / oignons nouveaux"]},
+    {name:"Tortilla espagnole", tag:"Monde", ingredients:["Pommes de terre","Œufs","Oignons"]},
+    {name:"Poulet à la libanaise", tag:"Monde", ingredients:["Blancs de poulet","Citrons","Ail","Cumin"]},
+    {name:"Kebab maison", tag:"Monde", ingredients:["Blancs de poulet","Pain pita","Salade","Tomates","Yaourts nature"]},
+    {name:"Chili vert au poulet", tag:"Monde", ingredients:["Blancs de poulet","Haricots blancs en boîte","Tomates","Curcuma"]},
+
+    // --- Mijoté (suite) ---
+    {name:"Ragoût de porc aux carottes", tag:"Mijoté", ingredients:["Côtes de porc","Carottes","Pommes de terre","Oignons"]},
+    {name:"Soupe de poisson", tag:"Mijoté", ingredients:["Cabillaud","Tomates","Oignons","Bouillon cube"]},
+    {name:"Petit salé aux lentilles", tag:"Mijoté", ingredients:["Lardons","Lentilles","Carottes","Oignons"]},
+    {name:"Velouté de brocoli", tag:"Mijoté", ingredients:["Brocoli","Pommes de terre","Crème fraîche","Bouillon cube"]},
+    {name:"Bœuf carottes", tag:"Mijoté", ingredients:["Rôti de bœuf","Carottes","Oignons","Bouillon cube"]},
+    {name:"Soupe de lentilles corail au curry", tag:"Mijoté", ingredients:["Lentilles","Curry (épice)","Lait de coco","Carottes"]},
+
+    // --- Pâtes & riz (suite) ---
+    {name:"Pâtes à la puttanesca", tag:"Pâtes & riz", ingredients:["Pâtes","Olives noires","Tomates","Ail"]},
+    {name:"Riz pilaf aux légumes", tag:"Pâtes & riz", ingredients:["Riz","Carottes","Légumes surgelés mélangés","Bouillon cube"]},
+    {name:"Pâtes à la crème et jambon", tag:"Pâtes & riz", ingredients:["Pâtes","Jambon blanc","Crème liquide","Parmesan râpé"]},
+    {name:"Nouilles sautées aux crevettes", tag:"Pâtes & riz", ingredients:["Nouilles de riz","Crevettes","Sauce soja","Carottes"]},
+    {name:"Pâtes aux légumes grillés", tag:"Pâtes & riz", ingredients:["Pâtes","Courgettes","Poivrons","Parmesan râpé"]},
+    {name:"Riz espagnol au chorizo", tag:"Pâtes & riz", ingredients:["Riz","Chorizo","Tomates","Poivrons"]},
+
+    // --- Salade & léger (suite) ---
+    {name:"Salade de courgettes crues", tag:"Salade & léger", ingredients:["Courgettes","Parmesan râpé","Citrons","Huile d'olive"]},
+    {name:"Salade de brocoli et feta", tag:"Salade & léger", ingredients:["Brocoli","Feta","Citron vert"]},
+    {name:"Salade de concombre à la feta", tag:"Salade & léger", ingredients:["Concombre","Feta","Oignons","Vinaigrette"]},
+    {name:"Wrap végétarien frais", tag:"Salade & léger", ingredients:["Pain pita","Houmous","Concombre","Tomates"]},
+    {name:"Bowl semoule avocat", tag:"Salade & léger", ingredients:["Semoule","Avocats","Tomates cerises","Citron vert"]},
+    {name:"Salade poulet-avocat", tag:"Salade & léger", ingredients:["Blancs de poulet","Avocats","Salade","Citron vert"]},
+
+    // --- Apéro & tapas ---
+    {name:"Planche apéro maison", tag:"Apéro & tapas", ingredients:["Fuet / saucisson sec","Rillettes","Olives noires","Crackers TUC"]},
+    {name:"Tapenade toast", tag:"Apéro & tapas", ingredients:["Tapenade","Baguette"]},
+    {name:"Blinis saumon fumé", tag:"Apéro & tapas", ingredients:["Blinis","Saumon fumé","Fromage blanc"]},
+    {name:"Guacamole maison", tag:"Apéro & tapas", ingredients:["Avocats","Citron vert","Oignons","Épices guacamole"]},
+    {name:"Houmous & chips", tag:"Apéro & tapas", ingredients:["Houmous","Chips apéritif"]},
+    {name:"Brochettes tomates-mozzarella", tag:"Apéro & tapas", ingredients:["Tomates cerises","Mozzarella","Basilic"]},
+    {name:"Mix apéritif salé", tag:"Apéro & tapas", ingredients:["Pistaches grillées salées","Noix de cajou","Olives noires"]},
+    {name:"Feta marinée au poivre", tag:"Apéro & tapas", ingredients:["Feta","Huile d'olive","Poivre"]},
+
+    // --- Brunch & petit-déj ---
+    {name:"Pancakes maison", tag:"Brunch & petit-déj", ingredients:["Farine","Œufs","Lait demi-écrémé","Levure chimique","Sirop d'érable"]},
+    {name:"Œufs au plat & bacon", tag:"Brunch & petit-déj", ingredients:["Œufs","Bacon","Pain de mie"]},
+    {name:"Porridge aux fruits rouges", tag:"Brunch & petit-déj", ingredients:["Flocons d'avoine","Lait demi-écrémé","Fruits rouges surgelés","Miel"]},
+    {name:"Granola maison", tag:"Brunch & petit-déj", ingredients:["Flocons d'avoine","Amandes effilées","Miel","Raisins secs"]},
+    {name:"Smoothie bowl banane", tag:"Brunch & petit-déj", ingredients:["Bananes","Yaourts nature","Miel","Fruits rouges surgelés"]},
+    {name:"Brioche perdue", tag:"Brunch & petit-déj", ingredients:["Brioche","Œufs","Lait demi-écrémé","Sucre en poudre"]},
+    {name:"Yaourt gourmand aux céréales", tag:"Brunch & petit-déj", ingredients:["Yaourts nature","Céréales","Miel"]},
+    {name:"Crêpes sucrées", tag:"Brunch & petit-déj", ingredients:["Farine","Œufs","Lait demi-écrémé","Extrait de vanille"]},
+
+    // --- Dessert ---
+    {name:"Gâteau au chocolat fondant", tag:"Dessert", ingredients:["Chocolat noir","Beurre doux","Œufs","Sucre en poudre","Farine"]},
+    {name:"Crumble aux pommes", tag:"Dessert", ingredients:["Pommes","Farine","Beurre doux","Sucre en poudre"]},
+    {name:"Compote maison", tag:"Dessert", ingredients:["Pommes","Sucre en poudre","Citrons"]},
+    {name:"Mousse au chocolat", tag:"Dessert", ingredients:["Chocolat noir","Œufs"]},
+    {name:"Tarte aux fruits rouges", tag:"Dessert", ingredients:["Farine","Beurre doux","Fruits rouges surgelés","Sucre en poudre"]},
+    {name:"Cookies aux pépites de chocolat", tag:"Dessert", ingredients:["Farine","Beurre doux","Chocolat noir","Sucre en poudre","Œufs"]},
+    {name:"Salade de fruits frais", tag:"Dessert", ingredients:["Pommes","Bananes","Melon","Citrons"]},
+    {name:"Yaourt glacé maison", tag:"Dessert", ingredients:["Yaourts nature","Miel","Fruits rouges surgelés"]},
+    {name:"Riz au lait", tag:"Dessert", ingredients:["Riz","Lait demi-écrémé","Sucre en poudre","Extrait de vanille"]},
+    {name:"Bananes rôties au miel", tag:"Dessert", ingredients:["Bananes","Miel","Beurre doux"]},
+
+    // --- Rapide (encore) ---
+    {name:"Sandwich thon-maïs", tag:"Rapide", ingredients:["Pain de mie","Thon en boîte","Maïs en boîte","Mayonnaise"]},
+    {name:"Tartine camembert chaud", tag:"Rapide", ingredients:["Baguette","Camembert","Miel"]},
+    {name:"Wrap thon-crudités", tag:"Rapide", ingredients:["Pain pita","Thon en boîte","Salade","Tomates"]},
+    {name:"Croque au comté", tag:"Rapide", ingredients:["Pain de mie","Comté","Beurre doux"]},
+    {name:"Salade de haricots verts", tag:"Rapide", ingredients:["Haricots verts en boîte","Tomates","Vinaigrette"]},
+
+    // --- Familial (encore) ---
+    {name:"Filets de poulet panés & purée", tag:"Familial", ingredients:["Filets de poulet panés (frais)","Pommes de terre","Beurre doux"]},
+    {name:"Sardines grillées & pommes de terre", tag:"Familial", ingredients:["Sardines","Pommes de terre","Citrons"]},
+    {name:"Chipolatas & haricots verts", tag:"Familial", ingredients:["Chipolatas","Haricots verts en boîte","Pommes de terre"]},
+    {name:"Nuggets maison & frites", tag:"Familial", ingredients:["Nuggets de poulet","Frites surgelées","Ketchup"]},
+    {name:"Rôti de porc à la moutarde", tag:"Familial", ingredients:["Côtes de porc","Moutarde","Crème fraîche"]},
+
+    // --- Végétarien (encore) ---
+    {name:"Semoule aux légumes rôtis", tag:"Végétarien", ingredients:["Semoule","Courgettes","Poivrons","Huile d'olive"]},
+    {name:"Galettes de courgettes", tag:"Végétarien", ingredients:["Courgettes","Œufs","Farine","Fromage râpé"]},
+    {name:"Salade de tomates séchées & feta", tag:"Végétarien", ingredients:["Tomates séchées","Feta","Basilic"]},
+    {name:"Poêlée d'épinards à la crème", tag:"Végétarien", ingredients:["Épinards frais","Crème fraîche","Ail"]},
+    {name:"Riz aux haricots blancs", tag:"Végétarien", ingredients:["Riz","Haricots blancs en boîte","Tomates","Cumin"]},
+
+    // --- Poisson (encore) ---
+    {name:"Salade de sardines", tag:"Poisson", ingredients:["Sardines","Tomates","Citrons","Salade"]},
+    {name:"Bâtonnets de poisson & purée", tag:"Poisson", ingredients:["Bâtonnets de poisson panés","Pommes de terre","Ketchup"]},
+    {name:"Cabillaud pané maison", tag:"Poisson", ingredients:["Cabillaud","Chapelure","Œufs","Citrons"]},
+    {name:"Riz aux crevettes & coriandre", tag:"Poisson", ingredients:["Riz","Crevettes","Coriandre (épice)","Citron vert"]},
+    {name:"Terrine de thon", tag:"Poisson", ingredients:["Thon en boîte","Fromage blanc","Persil"]},
+
+    // --- Monde (encore) ---
+    {name:"Poulet à la coriandre & citron vert", tag:"Monde", ingredients:["Blancs de poulet","Coriandre (épice)","Citron vert","Ail"]},
+    {name:"Riz cantonais épicé", tag:"Monde", ingredients:["Riz","Œufs","Chorizo","Curry (épice)"]},
+    {name:"Curry de crevettes", tag:"Monde", ingredients:["Crevettes","Lait de coco","Curry (épice)","Riz"]},
+    {name:"Poulet à la cannelle et raisins secs", tag:"Monde", ingredients:["Blancs de poulet","Cannelle","Oignons","Raisins secs"]},
+    {name:"Nouilles sautées épicées", tag:"Monde", ingredients:["Nouilles de riz","Sauce soja","Paprika","Poivrons"]},
+    {name:"Salade thaïe au poulet", tag:"Monde", ingredients:["Blancs de poulet","Concombre","Citron vert","Coriandre (épice)"]},
+    {name:"Poulet mariné soja-gingembre", tag:"Monde", ingredients:["Blancs de poulet","Sauce soja","Gingembre","Miel"]},
+
+    // --- Mijoté (encore) ---
+    {name:"Soupe de légumes maison", tag:"Mijoté", ingredients:["Carottes","Poireaux","Pommes de terre","Bouillon cube"]},
+    {name:"Mijoté de bœuf à la bière", tag:"Mijoté", ingredients:["Rôti de bœuf","Bière","Oignons","Carottes"]},
+    {name:"Velouté de champignons", tag:"Mijoté", ingredients:["Champignons de Paris","Pommes de terre","Crème fraîche","Bouillon cube"]},
+    {name:"Soupe de pois chiches épicée", tag:"Mijoté", ingredients:["Pois chiches","Cumin","Tomates","Bouillon cube"]},
+    {name:"Ragoût de légumes d'hiver", tag:"Mijoté", ingredients:["Carottes","Poireaux","Céleri branche","Bouillon cube"]},
+
+    // --- Pâtes & riz (encore) ---
+    {name:"Pâtes aux tomates séchées", tag:"Pâtes & riz", ingredients:["Pâtes","Tomates séchées","Ail","Huile d'olive"]},
+    {name:"Riz aux légumes surgelés", tag:"Pâtes & riz", ingredients:["Riz","Légumes surgelés mélangés","Sauce soja"]},
+    {name:"Pâtes au maïs et jambon", tag:"Pâtes & riz", ingredients:["Pâtes","Maïs en boîte","Jambon blanc","Crème liquide"]},
+    {name:"Risotto au comté", tag:"Pâtes & riz", ingredients:["Riz","Comté","Vin blanc","Beurre doux"]},
+    {name:"Pâtes aux haricots verts", tag:"Pâtes & riz", ingredients:["Pâtes","Haricots verts en boîte","Parmesan râpé"]},
+
+    // --- Salade & léger (encore) ---
+    {name:"Salade de maïs et poivrons", tag:"Salade & léger", ingredients:["Maïs en boîte","Poivrons","Tomates","Vinaigrette"]},
+    {name:"Salade de pâtes froide au thon", tag:"Salade & léger", ingredients:["Pâtes","Thon en boîte","Maïs en boîte","Mayonnaise"]},
+    {name:"Salade tiède de haricots blancs", tag:"Salade & léger", ingredients:["Haricots blancs en boîte","Tomates","Oignons","Huile d'olive"]},
+    {name:"Salade d'épinards frais", tag:"Salade & léger", ingredients:["Épinards frais","Feta","Amandes effilées"]},
+    {name:"Bowl avocat-œuf", tag:"Salade & léger", ingredients:["Avocats","Œufs","Salade","Citrons"]},
+
+    // --- Apéro & tapas (encore) ---
+    {name:"Chips & sauce barbecue", tag:"Apéro & tapas", ingredients:["Chips apéritif","Sauce barbecue"]},
+    {name:"Crackers au comté", tag:"Apéro & tapas", ingredients:["Crackers TUC","Comté"]},
+    {name:"Galettes de maïs apéro", tag:"Apéro & tapas", ingredients:["Galettes de maïs","Fromage à tartiner"]},
+    {name:"Tomates séchées marinées", tag:"Apéro & tapas", ingredients:["Tomates séchées","Huile d'olive","Basilic"]},
+    {name:"Verrines avocat-crevettes", tag:"Apéro & tapas", ingredients:["Avocats","Crevettes","Citron vert"]},
+
+    // --- Brunch & petit-déj (encore) ---
+    {name:"Tartine confiture", tag:"Brunch & petit-déj", ingredients:["Pain de mie","Confiture","Beurre doux"]},
+    {name:"Bol de céréales gourmand", tag:"Brunch & petit-déj", ingredients:["Céréales","Lait demi-écrémé","Bananes"]},
+    {name:"Pain perdu aux pommes", tag:"Brunch & petit-déj", ingredients:["Pain de mie","Œufs","Pommes","Sucre en poudre"]},
+    {name:"Smoothie banane & lait végétal", tag:"Brunch & petit-déj", ingredients:["Bananes","Lait végétal","Miel"]},
+    {name:"Croissant & jus d'orange", tag:"Brunch & petit-déj", ingredients:["Croissants","Jus d'orange","Confiture"]},
+
+    // --- Dessert (encore) ---
+    {name:"Barres croustillantes maison", tag:"Dessert", ingredients:["Flocons d'avoine","Miel","Chocolat au lait"]},
+    {name:"Madeleines maison", tag:"Dessert", ingredients:["Farine","Œufs","Sucre en poudre","Beurre doux"]},
+    {name:"Fondant au chocolat au lait", tag:"Dessert", ingredients:["Chocolat au lait","Beurre doux","Œufs","Farine"]},
+    {name:"Salade d'agrumes", tag:"Dessert", ingredients:["Citrons","Citron vert","Sucre en poudre"]},
+    {name:"Yaourt aux fruits rouges et miel", tag:"Dessert", ingredients:["Yaourts nature","Fruits rouges surgelés","Miel"]}
+  ];
+  // id stable pour chaque recette du catalogue (utilisé pour les favoris et le panier),
+  // basé sur son nom — slug() est une function declaration donc disponible ici malgré
+  // sa définition plus bas dans le fichier (hoisting).
+  RECIPE_DATABASE.forEach(function(r){ r.id = slug(r.name); r.custom = false; });
+
+  function buildNameToRayonMap(){
+    var map = {};
+    RAYON_ORDER.forEach(function(rayon){
+      (DEFAULT_ITEMS_BY_RAYON[rayon] || []).forEach(function(name){ map[name] = rayon; });
+    });
+    return map;
+  }
+  var NAME_TO_RAYON = buildNameToRayonMap();
+  function rayonForIngredientName(name){ return NAME_TO_RAYON[name] || "Épicerie salée"; }
+
+  function allRecipes(){ return RECIPE_DATABASE.concat(state.customRecipes); }
+  function getRecipeById(id){ return allRecipes().find(function(r){ return r.id === id; }); }
 
   function uid(){
     if(window.crypto && window.crypto.randomUUID){ return window.crypto.randomUUID(); }
@@ -734,8 +1319,9 @@
   }
 
   /* ---------------- state ---------------- */
-  var state = { masterList: [], cart: [], loyaltyCard: "", loyaltyPhoto: "", deletedKeys: [], history: [] };
+  var state = { masterList: [], cart: [], loyaltyCard: "", loyaltyPhoto: "", deletedKeys: [], history: [], notes: [], customRecipes: [], favorites: [], cartNotes: [] };
   var pendingDeletion = null;
+  var editingCartNoteId = null;
   var quickNavObserver = null;
 
   /* ---------------- toast ---------------- */
@@ -772,6 +1358,14 @@
   async function persistHistory(){
     await storeSet("courses:history", JSON.stringify(state.history));
     if(syncActive && roomRef){ try{ await roomRef.child("history").set(state.history); }catch(e){} }
+  }
+  async function persistFavorites(){
+    await storeSet("courses:favorites", JSON.stringify(state.favorites));
+    if(syncActive && roomRef){ try{ await roomRef.child("favorites").set(state.favorites); }catch(e){} }
+  }
+  async function persistCustomRecipes(){
+    await storeSet("courses:custom-recipes", JSON.stringify(state.customRecipes));
+    if(syncActive && roomRef){ try{ await roomRef.child("customRecipes").set(state.customRecipes); }catch(e){} }
   }
 
   /* Ajoute au catalogue les nouveaux articles définis dans DEFAULT_ITEMS_BY_RAYON qui ne sont
@@ -834,10 +1428,9 @@
     var container = document.getElementById("list-container");
     var rayons = orderedRayons(state.masterList);
 
-    renderQuickNav(rayons);
-
     if(state.masterList.length === 0){
       container.innerHTML = '<p class="empty-note">Ta liste est vide. Ajoute un article ci-dessus pour commencer.</p>';
+      try{ renderQuickNav([]); }catch(e){}
       return;
     }
 
@@ -869,6 +1462,12 @@
     });
 
     container.innerHTML = anyVisible ? html : '<p class="empty-note">Aucun article ne correspond à ta recherche.</p>';
+    // Le nav rapide est construit APRÈS l'injection du HTML ci-dessus, pour que les sections
+    // .rayon existent réellement dans la page au moment où on les observe (sinon la mise en
+    // surbrillance des pastilles perdait la sync). Protégé pour que même une erreur ici ne
+    // bloque jamais l'affichage de la liste elle-même.
+    try{ renderQuickNav(anyVisible ? rayons.filter(function(r){ return document.getElementById("rayon-" + slug(r)); }) : []); }
+    catch(e){}
   }
 
   function renderRayonSelect(){
@@ -934,57 +1533,295 @@
     container.innerHTML = html;
   }
 
-  /* ---------------- render: card tab ---------------- */
-  function renderCard(){
-    var photoWrap = document.getElementById("card-photo-display");
-    var numberWrap = document.getElementById("card-number-display-wrap");
-    var formWrap = document.getElementById("card-form-wrap");
+  /* Notes globales du panier : simples, libres, pas liées à un article précis
+     (ex. "ne pas acheter ça", "attendre la promo"). Ajout / modification / suppression. */
+  var editingCartNoteId = null;
 
-    if(state.loyaltyPhoto){
-      photoWrap.style.display = "block";
-      numberWrap.style.display = "none";
-      formWrap.style.display = "none";
-      document.getElementById("card-photo-img").src = state.loyaltyPhoto;
-    } else if(state.loyaltyCard){
-      photoWrap.style.display = "none";
-      numberWrap.style.display = "block";
-      formWrap.style.display = "none";
-      document.getElementById("card-number-display").textContent = state.loyaltyCard;
-      try{
-        JsBarcode("#barcode-svg", state.loyaltyCard, {
-          format:"CODE128", lineColor:"#221F1A", width:2, height:70,
-          displayValue:true, fontSize:14, margin:8
-        });
-      }catch(e){}
-    } else {
-      photoWrap.style.display = "none";
-      numberWrap.style.display = "none";
-      formWrap.style.display = "block";
+  function renderCartNotes(){
+    var container = document.getElementById("cart-notes-summary");
+    if(!state.cartNotes || state.cartNotes.length === 0){
+      container.innerHTML = '';
+      return;
+    }
+    container.innerHTML = state.cartNotes.map(function(n){
+      if(editingCartNoteId === n.id){
+        return '<div class="cart-note-row">'
+          + '<input type="text" class="cart-note-row-input" data-cart-note-id="' + n.id + '" value="' + escapeHtml(n.text) + '">'
+          + '</div>';
+      }
+      return '<div class="cart-note-row">'
+        + '<span class="cnf-text">' + escapeHtml(n.text) + '</span>'
+        + '<button class="icon-btn" data-action="edit-cart-note" data-id="' + n.id + '" aria-label="Modifier">✏️</button>'
+        + '<button class="icon-btn del" data-action="delete-cart-note" data-id="' + n.id + '" aria-label="Supprimer">✕</button>'
+        + '</div>';
+    }).join("");
+    if(editingCartNoteId){
+      var input = container.querySelector('.cart-note-row-input[data-cart-note-id="' + editingCartNoteId + '"]');
+      if(input){ input.focus(); input.setSelectionRange(input.value.length, input.value.length); }
     }
   }
 
-  /* ---------------- image compression ---------------- */
-  function compressImage(file){
-    return new Promise(function(resolve, reject){
-      var reader = new FileReader();
-      reader.onload = function(e){
-        var img = new Image();
-        img.onload = function(){
-          var maxDim = 1000;
-          var w = img.width, h = img.height;
-          if(w > h && w > maxDim){ h = Math.round(h * maxDim / w); w = maxDim; }
-          else if(h >= w && h > maxDim){ w = Math.round(w * maxDim / h); h = maxDim; }
-          var canvas = document.createElement("canvas");
-          canvas.width = w; canvas.height = h;
-          canvas.getContext("2d").drawImage(img, 0, 0, w, h);
-          resolve(canvas.toDataURL("image/jpeg", 0.82));
-        };
-        img.onerror = reject;
-        img.src = e.target.result;
-      };
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
+  /* ---------------- sélecteur de rayon pour ingrédients (formulaire de recette) ---------------- */
+  function renderIngredientRayonSelect(selectId){
+    var select = document.getElementById(selectId);
+    var current = select.value;
+    var rayons = orderedRayons(state.masterList.length ? state.masterList : RAYON_ORDER.map(function(r){return {rayon:r};}));
+    select.innerHTML = "";
+    rayons.forEach(function(r){
+      var opt = document.createElement("option");
+      opt.value = r; opt.textContent = r;
+      select.appendChild(opt);
     });
+    if(current && [].slice.call(select.options).some(function(o){return o.value===current;})){
+      select.value = current;
+    }
+  }
+
+  /* ---------------- render: menu tab (idées de menu + depuis le frigo) ---------------- */
+  var fridgeItems = [];
+
+  function renderMenuTagNav(){
+    var nav = document.getElementById("menu-tag-nav");
+    var tags = Object.keys(TAG_COLORS);
+    nav.innerHTML = '<button class="chip active" data-tag="" style="--chip-color:#556270;"><span class="dot"></span>Tout</button>'
+      + tags.map(function(t){
+        return '<button class="chip" data-tag="' + escapeHtml(t) + '" style="--chip-color:' + tagColor(t) + ';"><span class="dot"></span>' + escapeHtml(t) + '</button>';
+      }).join("");
+  }
+
+  function recipeIngredientTagsHtml(ingredients, haveSet){
+    return ingredients.map(function(name){
+      var cls = "recipe-ing-tag";
+      if(haveSet){ cls += haveSet.has ? (haveSet.has(name) ? " have" : " missing") : ""; }
+      return '<span class="' + cls + '">' + escapeHtml(name) + '</span>';
+    }).join("");
+  }
+
+  function recipeCardHtml(recipe, matchInfo){
+    var haveSet = matchInfo ? matchInfo.haveSet : null;
+    var isFav = state.favorites.indexOf(recipe.id) !== -1;
+    var matchLine = "";
+    if(matchInfo){
+      var full = matchInfo.missing.length === 0;
+      matchLine = '<div class="recipe-match' + (full ? "" : " partial") + '">'
+        + (full ? "✓ Tu as tout !" : (matchInfo.have + "/" + recipe.ingredients.length + " ingrédients — il manque " + matchInfo.missing.length))
+        + '</div>';
+    }
+    return '<div class="recipe-card">'
+      + '<div class="recipe-card-head">'
+      + '<h4>' + escapeHtml(recipe.name) + (recipe.custom ? ' <span style="font-size:10.5px;color:var(--ink-soft);font-weight:400;">(perso)</span>' : '') + '</h4>'
+      + '<button class="recipe-star-btn' + (isFav ? " active" : "") + '" data-action="recipe-toggle-fav" data-id="' + recipe.id + '" aria-label="Mettre en favori">' + (isFav ? "★" : "☆") + '</button>'
+      + '<span class="recipe-tag-pill" style="background:' + tagColor(recipe.tag) + ';">' + escapeHtml(recipe.tag) + '</span></div>'
+      + matchLine
+      + '<div class="recipe-ing-list">' + recipeIngredientTagsHtml(recipe.ingredients, haveSet) + '</div>'
+      + '<div class="recipe-card-actions">'
+      + '<button class="note-btn-add" data-action="recipe-add-cart" data-id="' + recipe.id + '">+ Ajouter au panier</button>'
+      + (matchInfo && matchInfo.missing.length > 0 ? '<button class="note-btn-add" data-action="recipe-add-missing" data-id="' + recipe.id + '" style="background:var(--amber);color:var(--ink);">+ Ajouter ce qui manque</button>' : '')
+      + (recipe.custom ? '<button class="note-btn-del" data-action="recipe-delete-custom" data-id="' + recipe.id + '">Supprimer</button>' : '')
+      + '</div></div>';
+  }
+
+  function renderMenuBrowseResults(){
+    var filter = (document.getElementById("menu-search-box").value || "").trim().toLowerCase();
+    var activeTag = document.querySelector('#menu-tag-nav .chip.active');
+    var tag = activeTag ? activeTag.dataset.tag : "";
+    var results = allRecipes().filter(function(r){
+      var matchesTag = !tag || r.tag === tag;
+      var matchesText = !filter
+        || r.name.toLowerCase().indexOf(filter) !== -1
+        || r.ingredients.some(function(i){ return i.toLowerCase().indexOf(filter) !== -1; });
+      return matchesTag && matchesText;
+    });
+    var container = document.getElementById("menu-browse-results");
+    if(results.length === 0){
+      container.innerHTML = '<p class="empty-note">Aucune recette ne correspond.</p>';
+      return;
+    }
+    container.innerHTML = results.map(function(r){ return recipeCardHtml(r, null); }).join("");
+  }
+
+  function renderFavoritesResults(){
+    var container = document.getElementById("menu-fav-results");
+    var favs = allRecipes().filter(function(r){ return state.favorites.indexOf(r.id) !== -1; });
+    if(favs.length === 0){
+      container.innerHTML = '<p class="empty-note">Aucun favori pour l\'instant — tape sur l\'étoile ☆ d\'une recette pour la garder ici.</p>';
+      return;
+    }
+    container.innerHTML = favs.map(function(r){ return recipeCardHtml(r, null); }).join("");
+  }
+
+  function refreshMenuViews(){
+    renderMenuBrowseResults();
+    renderFavoritesResults();
+    if(fridgeItems.length > 0){ renderFridgeResults(); }
+  }
+
+  function renderFridgeChips(){
+    var wrap = document.getElementById("fridge-ing-chips");
+    wrap.innerHTML = fridgeItems.map(function(name, idx){
+      return '<span class="note-ing-chip">' + escapeHtml(name)
+        + '<button type="button" data-fridge-idx="' + idx + '" aria-label="Retirer">✕</button></span>';
+    }).join("");
+  }
+
+  function ingredientOwned(fridgeNorm, ingredientName){
+    var ingNorm = normalizeAccents(ingredientName);
+    return fridgeNorm.some(function(f){
+      return ingNorm.indexOf(f) !== -1 || f.indexOf(ingNorm) !== -1;
+    });
+  }
+
+  function renderFridgeResults(){
+    var container = document.getElementById("menu-fridge-results");
+    if(fridgeItems.length === 0){
+      container.innerHTML = '<p class="empty-note">Ajoute au moins un ingrédient que tu as, puis clique sur « Trouver des idées ».</p>';
+      return;
+    }
+    var fridgeNorm = fridgeItems.map(normalizeAccents);
+    var scored = allRecipes().map(function(recipe){
+      var have = recipe.ingredients.filter(function(ing){ return ingredientOwned(fridgeNorm, ing); });
+      var missing = recipe.ingredients.filter(function(ing){ return !ingredientOwned(fridgeNorm, ing); });
+      return { recipe: recipe, have: have.length, missing: missing, haveSet: { has: function(name){ return have.indexOf(name) !== -1; } } };
+    }).filter(function(s){ return s.have > 0; })
+      .sort(function(a,b){
+        var scoreA = a.have / a.recipe.ingredients.length, scoreB = b.have / b.recipe.ingredients.length;
+        return scoreB - scoreA || b.have - a.have;
+      });
+
+    if(scored.length === 0){
+      container.innerHTML = '<p class="empty-note">Aucune recette ne correspond à ces ingrédients pour l\'instant — essaie d\'en ajouter d\'autres.</p>';
+      return;
+    }
+    container.innerHTML = scored.slice(0, 25).map(function(s){ return recipeCardHtml(s.recipe, s); }).join("");
+  }
+
+  async function addRecipeIngredientsToCart(recipeId, onlyMissingNames){
+    var recipe = getRecipeById(recipeId);
+    if(!recipe){ return; }
+    var namesToAdd = onlyMissingNames || recipe.ingredients;
+    var masterChanged = false;
+    namesToAdd.forEach(function(name){
+      var rayon = rayonForIngredientName(name);
+      var key = catalogKey(rayon, name);
+      var existsInMaster = state.masterList.some(function(it){ return catalogKey(it.rayon, it.name) === key; });
+      if(!existsInMaster && state.deletedKeys.indexOf(key) === -1){
+        state.masterList.push({id: uid(), name: name, rayon: rayon});
+        masterChanged = true;
+      }
+      var existingCart = state.cart.find(function(c){ return c.name === name && c.rayon === rayon; });
+      if(existingCart){ existingCart.qty += 1; }
+      else{ state.cart.push({id: uid(), name: name, rayon: rayon, qty: 1, checked: false}); }
+    });
+    if(masterChanged){ await persistMasterList(); renderRayonSelect(); renderList(); }
+    await persistCart();
+    renderCart();
+    showToast(recipe.name + " → ingrédients ajoutés au panier 🛒");
+  }
+
+  async function toggleFavoriteRecipe(recipeId){
+    var idx = state.favorites.indexOf(recipeId);
+    if(idx === -1){ state.favorites.push(recipeId); }
+    else{ state.favorites.splice(idx, 1); }
+    await persistFavorites();
+    refreshMenuViews();
+  }
+
+  async function deleteCustomRecipe(recipeId){
+    var recipe = state.customRecipes.find(function(r){ return r.id === recipeId; });
+    if(!recipe){ return; }
+    state.customRecipes = state.customRecipes.filter(function(r){ return r.id !== recipeId; });
+    var favIdx = state.favorites.indexOf(recipeId);
+    if(favIdx !== -1){ state.favorites.splice(favIdx, 1); await persistFavorites(); }
+    await persistCustomRecipes();
+    refreshMenuViews();
+
+    showUndoBanner('Recette « ' + recipe.name + ' » supprimée', async function(){
+      state.customRecipes.push(recipe);
+      await persistCustomRecipes();
+      refreshMenuViews();
+      showToast("Recette restaurée");
+    });
+  }
+
+  function handleRecipeCardClick(e){
+    var btn = e.target.closest("button[data-action]");
+    if(!btn){ return; }
+    var id = btn.dataset.id;
+    var recipe = getRecipeById(id);
+    if(!recipe){ return; }
+    if(btn.dataset.action === "recipe-add-cart"){ addRecipeIngredientsToCart(id); }
+    if(btn.dataset.action === "recipe-add-missing"){
+      var fridgeNorm = fridgeItems.map(normalizeAccents);
+      var missing = recipe.ingredients.filter(function(ing){ return !ingredientOwned(fridgeNorm, ing); });
+      addRecipeIngredientsToCart(id, missing);
+    }
+    if(btn.dataset.action === "recipe-toggle-fav"){ toggleFavoriteRecipe(id); }
+    if(btn.dataset.action === "recipe-delete-custom"){ deleteCustomRecipe(id); }
+  }
+
+  /* ---------------- création d'une recette personnalisée ---------------- */
+  var recipeFormIngredients = [];
+
+  function renderRecipeTagSelect(){
+    var select = document.getElementById("recipe-tag-select");
+    select.innerHTML = Object.keys(TAG_COLORS).map(function(t){
+      return '<option value="' + escapeHtml(t) + '">' + escapeHtml(t) + '</option>';
+    }).join("");
+  }
+
+  function renderRecipeIngredientChips(){
+    var wrap = document.getElementById("recipe-ing-chips");
+    wrap.innerHTML = recipeFormIngredients.map(function(name, idx){
+      return '<span class="note-ing-chip">' + escapeHtml(name)
+        + '<button type="button" data-recipe-ing-idx="' + idx + '" aria-label="Retirer">✕</button></span>';
+    }).join("");
+  }
+
+  function addRecipeIngredientToForm(){
+    var input = document.getElementById("recipe-ing-name");
+    var raySelect = document.getElementById("recipe-ing-rayon");
+    var name = input.value.trim();
+    if(!name){ return; }
+    if(recipeFormIngredients.indexOf(name) === -1){ recipeFormIngredients.push(name); }
+    // enregistre aussi ce nom dans la table de correspondance rayon pour cette session,
+    // au cas où ce soit un ingrédient inédit choisi avec un rayon précis
+    NAME_TO_RAYON[name] = raySelect.value;
+    input.value = "";
+    renderRecipeIngredientChips();
+    input.focus();
+  }
+  function removeRecipeIngredientFromForm(idx){
+    recipeFormIngredients.splice(idx, 1);
+    renderRecipeIngredientChips();
+  }
+
+  function openRecipeForm(){
+    document.getElementById("recipe-form").style.display = "block";
+    document.getElementById("open-recipe-form-btn").style.display = "none";
+    document.getElementById("recipe-form").scrollIntoView({behavior:"smooth", block:"start"});
+    document.getElementById("recipe-name-input").focus();
+  }
+  function closeRecipeForm(){
+    document.getElementById("recipe-form").style.display = "none";
+    document.getElementById("open-recipe-form-btn").style.display = "block";
+    document.getElementById("recipe-name-input").value = "";
+    recipeFormIngredients = [];
+    renderRecipeIngredientChips();
+  }
+
+  async function saveCustomRecipe(){
+    var nameInput = document.getElementById("recipe-name-input");
+    var name = nameInput.value.trim();
+    if(!name){ showToast("Donne un nom à ta recette"); nameInput.focus(); return; }
+    if(recipeFormIngredients.length === 0){ showToast("Ajoute au moins un ingrédient"); return; }
+
+    var tag = document.getElementById("recipe-tag-select").value;
+    var id = "perso-" + slug(name) + "-" + Date.now().toString(36);
+    state.customRecipes.push({ id: id, name: name, tag: tag, ingredients: recipeFormIngredients.slice(), custom: true });
+    await persistCustomRecipes();
+    closeRecipeForm();
+    refreshMenuViews();
+    showToast(name + " ajoutée à tes recettes");
   }
 
   /* ---------------- actions ---------------- */
@@ -999,15 +1836,16 @@
     showToast(item.name + " ajouté au panier");
   }
 
-  function showUndoBanner(text){
+  function showUndoBanner(text, restoreFn){
     if(pendingDeletion && pendingDeletion.timer){ clearTimeout(pendingDeletion.timer); }
     var banner = document.getElementById("undo-banner");
     document.getElementById("undo-text").textContent = text;
     banner.classList.add("show");
-    return setTimeout(function(){
+    var timer = setTimeout(function(){
       banner.classList.remove("show");
       pendingDeletion = null;
     }, 5000);
+    pendingDeletion = { timer: timer, restore: restoreFn };
   }
   function hideUndoBanner(){
     document.getElementById("undo-banner").classList.remove("show");
@@ -1015,7 +1853,9 @@
 
   /* La suppression est appliquée et enregistrée tout de suite (fiable même si l'app est
      fermée ou si l'autre téléphone synchronise au même moment). "Annuler" restaure
-     ensuite l'article normalement, comme un ajout classique. */
+     ensuite l'élément normalement, comme un ajout classique. Ce système ne dépend
+     d'aucune boîte de dialogue native (confirm), qui peut être bloquée selon l'endroit
+     où le fichier est ouvert — la suppression fonctionne donc partout, de façon fiable. */
   async function deleteMasterItem(itemId){
     var item = state.masterList.find(function(it){ return it.id === itemId; });
     if(!item){ return; }
@@ -1028,26 +1868,25 @@
     renderList();
     renderRayonSelect();
 
-    var timer = showUndoBanner(item.name + " supprimé");
-    pendingDeletion = { timer: timer, item: item, key: key };
+    showUndoBanner(item.name + " supprimé", async function(){
+      var idx = state.deletedKeys.indexOf(key);
+      if(idx !== -1){ state.deletedKeys.splice(idx, 1); }
+      state.masterList.push(item);
+      await persistDeletedKeys();
+      await persistMasterList();
+      renderList();
+      renderRayonSelect();
+      showToast(item.name + " restauré");
+    });
   }
 
-  async function undoDeleteItem(){
+  async function handleUndoClick(){
     if(!pendingDeletion){ return; }
     clearTimeout(pendingDeletion.timer);
-    var item = pendingDeletion.item;
-    var key = pendingDeletion.key;
+    var restore = pendingDeletion.restore;
     pendingDeletion = null;
     hideUndoBanner();
-
-    var idx = state.deletedKeys.indexOf(key);
-    if(idx !== -1){ state.deletedKeys.splice(idx, 1); }
-    state.masterList.push(item);
-    await persistDeletedKeys();
-    await persistMasterList();
-    renderList();
-    renderRayonSelect();
-    showToast(item.name + " restauré");
+    if(restore){ await restore(); }
   }
 
   async function addCustomItem(){
@@ -1143,48 +1982,103 @@
     await persistCart();
     renderCart();
   }
+
+  async function persistCartNotes(){
+    await storeSet("courses:cart-notes", JSON.stringify(state.cartNotes));
+    if(syncActive && roomRef){ try{ await roomRef.child("cartNotes").set(state.cartNotes); }catch(e){} }
+  }
+
+  async function addCartNote(){
+    var input = document.getElementById("cart-note-new-input");
+    var text = input.value.trim();
+    if(!text){ return; }
+    state.cartNotes.push({ id: uid(), text: text });
+    await persistCartNotes();
+    input.value = "";
+    renderCartNotes();
+  }
+
+  function startEditCartNote(noteId){
+    editingCartNoteId = noteId;
+    renderCartNotes();
+  }
+  async function saveCartNote(noteId, text){
+    var n = state.cartNotes.find(function(x){ return x.id === noteId; });
+    editingCartNoteId = null;
+    text = (text || "").trim();
+    if(!n){ renderCartNotes(); return; }
+    if(!text){
+      // une note vidée par l'utilisateur est simplement supprimée
+      state.cartNotes = state.cartNotes.filter(function(x){ return x.id !== noteId; });
+    } else {
+      n.text = text;
+    }
+    await persistCartNotes();
+    renderCartNotes();
+  }
+
+  async function deleteCartNote(noteId){
+    var note = state.cartNotes.find(function(n){ return n.id === noteId; });
+    if(!note){ return; }
+    state.cartNotes = state.cartNotes.filter(function(n){ return n.id !== noteId; });
+    await persistCartNotes();
+    renderCartNotes();
+
+    showUndoBanner("Note supprimée", async function(){
+      state.cartNotes.push(note);
+      await persistCartNotes();
+      renderCartNotes();
+      showToast("Note restaurée");
+    });
+  }
+
   async function clearCart(){
     if(state.cart.length === 0){ return; }
-    if(!window.confirm("Vider le panier ? Cette action est définitive.")){ return; }
+    var previousCart = state.cart.slice();
     state.cart = [];
     await persistCart();
     renderCart();
-    showToast("Panier vidé");
+
+    showUndoBanner("Panier vidé (" + previousCart.length + " article" + (previousCart.length > 1 ? "s" : "") + ")", async function(){
+      state.cart = previousCart;
+      await persistCart();
+      renderCart();
+      showToast("Panier restauré");
+    });
   }
 
-  async function saveLoyaltyCard(){
-    var input = document.getElementById("card-number-input");
-    var value = input.value.trim();
-    if(!value){ showToast("Indique un numéro de carte"); return; }
-    state.loyaltyCard = value;
-    await persistCard();
+  function detectIngredientsForRecipe(){
+    var title = document.getElementById("recipe-name-input").value;
+    var desc = document.getElementById("recipe-desc-input").value;
+    var found = detectIngredientsFromText(title + " " + desc);
+    if(found.length === 0){ showToast("Aucun ingrédient reconnu dans ce texte"); return; }
+    var added = 0;
+    found.forEach(function(f){
+      if(recipeFormIngredients.indexOf(f.name) === -1){
+        recipeFormIngredients.push(f.name);
+        NAME_TO_RAYON[f.name] = f.rayon;
+        added++;
+      }
+    });
+    renderRecipeIngredientChips();
+    showToast(added > 0 ? (added + " ingrédient" + (added > 1 ? "s" : "") + " détecté" + (added > 1 ? "s" : "")) : "Ingrédients déjà dans la liste");
+  }
+
+  function addFridgeIngredient(){
+    var input = document.getElementById("fridge-ing-input");
+    var raw = input.value.trim();
+    if(!raw){ return; }
+    // permet aussi de coller plusieurs ingrédients séparés par des virgules d'un coup
+    raw.split(",").map(function(s){ return s.trim(); }).filter(Boolean).forEach(function(name){
+      if(fridgeItems.indexOf(name) === -1){ fridgeItems.push(name); }
+    });
     input.value = "";
-    renderCard();
-    showToast("Carte enregistrée");
+    renderFridgeChips();
+    input.focus();
   }
-  async function removeLoyaltyCard(){
-    if(!window.confirm("Supprimer la carte enregistrée ?")){ return; }
-    state.loyaltyCard = "";
-    await persistCard();
-    renderCard();
-  }
-  async function handlePhotoFile(file){
-    if(!file){ return; }
-    try{
-      var dataUrl = await compressImage(file);
-      state.loyaltyPhoto = dataUrl;
-      await persistPhoto();
-      renderCard();
-      showToast("Photo enregistrée");
-    }catch(e){
-      showToast("Impossible de lire cette image");
-    }
-  }
-  async function removePhoto(){
-    if(!window.confirm("Supprimer la photo enregistrée ?")){ return; }
-    state.loyaltyPhoto = "";
-    await persistPhoto();
-    renderCard();
+  function removeFridgeIngredient(idx){
+    fridgeItems.splice(idx, 1);
+    renderFridgeChips();
   }
 
   /* ---------------- synchronisation entre appareils ---------------- */
@@ -1232,12 +2126,18 @@
         if(Array.isArray(data.cart)){ state.cart = data.cart; }
         if(Array.isArray(data.deletedKeys)){ state.deletedKeys = data.deletedKeys; }
         if(Array.isArray(data.history)){ state.history = data.history; }
+        if(Array.isArray(data.favorites)){ state.favorites = data.favorites; }
+        if(Array.isArray(data.customRecipes)){ state.customRecipes = data.customRecipes; }
+        if(Array.isArray(data.cartNotes)){ state.cartNotes = data.cartNotes; }
       } else {
         await roomRef.set({
           masterList: state.masterList,
           cart: state.cart,
           deletedKeys: state.deletedKeys,
-          history: state.history
+          history: state.history,
+          favorites: state.favorites,
+          customRecipes: state.customRecipes,
+          cartNotes: state.cartNotes
         });
       }
 
@@ -1253,6 +2153,15 @@
       roomRef.child("history").on("value", function(s){
         if(s.exists() && Array.isArray(s.val())){ state.history = s.val(); renderHistory(); }
       });
+      roomRef.child("favorites").on("value", function(s){
+        if(s.exists() && Array.isArray(s.val())){ state.favorites = s.val(); refreshMenuViews(); }
+      });
+      roomRef.child("customRecipes").on("value", function(s){
+        if(s.exists() && Array.isArray(s.val())){ state.customRecipes = s.val(); refreshMenuViews(); }
+      });
+      roomRef.child("cartNotes").on("value", function(s){
+        if(s.exists() && Array.isArray(s.val())){ state.cartNotes = s.val(); renderCartNotes(); }
+      });
       /* La carte de fidélité (numéro et photo) reste volontairement locale à chaque
          téléphone : elle n'est ni lue ni écrite dans Firebase. */
 
@@ -1261,6 +2170,8 @@
       renderList();
       renderCart();
       renderHistory();
+      renderCartNotes();
+      refreshMenuViews();
       showToast("Synchronisé avec le code « " + roomCode + " »");
     }catch(e){
       syncActive = false;
@@ -1276,7 +2187,7 @@
     document.querySelectorAll(".panel").forEach(function(panel){
       panel.classList.toggle("active", panel.id === "panel-" + tabName);
     });
-    if(tabName === "card"){ renderCard(); }
+    if(tabName === "menu"){ renderIngredientRayonSelect("recipe-ing-rayon"); renderMenuBrowseResults(); renderFavoritesResults(); }
   }
 
   /* ---------------- event wiring ---------------- */
@@ -1325,8 +2236,30 @@
       if(!chk){ return; }
       toggleChecked(chk.dataset.id);
     });
+
+    document.getElementById("cart-note-add-btn").addEventListener("click", addCartNote);
+    document.getElementById("cart-note-new-input").addEventListener("keydown", function(e){
+      if(e.key === "Enter"){ e.preventDefault(); addCartNote(); }
+    });
+    document.getElementById("cart-notes-summary").addEventListener("click", function(e){
+      var btn = e.target.closest("button[data-action]");
+      if(!btn){ return; }
+      if(btn.dataset.action === "edit-cart-note"){ startEditCartNote(btn.dataset.id); }
+      if(btn.dataset.action === "delete-cart-note"){ deleteCartNote(btn.dataset.id); }
+    });
+    document.getElementById("cart-notes-summary").addEventListener("focusout", function(e){
+      if(e.target.classList && e.target.classList.contains("cart-note-row-input")){
+        saveCartNote(e.target.dataset.cartNoteId, e.target.value);
+      }
+    });
+    document.getElementById("cart-notes-summary").addEventListener("keydown", function(e){
+      if(e.target.classList && e.target.classList.contains("cart-note-row-input") && e.key === "Enter"){
+        e.target.blur();
+      }
+    });
+
     document.getElementById("clear-cart-btn").addEventListener("click", clearCart);
-    document.getElementById("undo-btn").addEventListener("click", undoDeleteItem);
+    document.getElementById("undo-btn").addEventListener("click", handleUndoClick);
     document.getElementById("mark-purchased-btn").addEventListener("click", markAsPurchased);
 
     document.getElementById("history-container").addEventListener("click", function(e){
@@ -1336,17 +2269,55 @@
       if(row){ row.closest(".history-item").classList.toggle("expanded"); }
     });
 
-    document.getElementById("save-card-btn").addEventListener("click", saveLoyaltyCard);
-    document.getElementById("card-number-input").addEventListener("keydown", function(e){ if(e.key === "Enter"){ saveLoyaltyCard(); } });
-    document.getElementById("remove-card-btn").addEventListener("click", removeLoyaltyCard);
-    document.getElementById("remove-photo-btn").addEventListener("click", removePhoto);
-    document.getElementById("replace-photo-btn").addEventListener("click", function(){
-      document.getElementById("card-photo-input").click();
+    function setMenuMode(mode){
+      var modes = { browse: "menu-mode-browse-btn", fav: "menu-mode-fav-btn", fridge: "menu-mode-fridge-btn" };
+      var views = { browse: "menu-browse-view", fav: "menu-fav-view", fridge: "menu-fridge-view" };
+      Object.keys(modes).forEach(function(key){
+        document.getElementById(modes[key]).classList.toggle("active", key === mode);
+        document.getElementById(views[key]).style.display = key === mode ? "block" : "none";
+      });
+      if(mode === "fav"){ renderFavoritesResults(); }
+    }
+    document.getElementById("menu-mode-browse-btn").addEventListener("click", function(){ setMenuMode("browse"); });
+    document.getElementById("menu-mode-fav-btn").addEventListener("click", function(){ setMenuMode("fav"); });
+    document.getElementById("menu-mode-fridge-btn").addEventListener("click", function(){ setMenuMode("fridge"); });
+
+    document.getElementById("menu-search-box").addEventListener("input", renderMenuBrowseResults);
+    document.getElementById("menu-tag-nav").addEventListener("click", function(e){
+      var chip = e.target.closest(".chip");
+      if(!chip){ return; }
+      document.querySelectorAll("#menu-tag-nav .chip").forEach(function(c){ c.classList.remove("active"); });
+      chip.classList.add("active");
+      renderMenuBrowseResults();
     });
-    document.getElementById("card-photo-input").addEventListener("change", function(e){
-      handlePhotoFile(e.target.files[0]);
-      e.target.value = "";
+    document.getElementById("menu-browse-results").addEventListener("click", handleRecipeCardClick);
+    document.getElementById("menu-fav-results").addEventListener("click", handleRecipeCardClick);
+
+    document.getElementById("open-recipe-form-btn").addEventListener("click", openRecipeForm);
+    document.getElementById("recipe-cancel-btn").addEventListener("click", closeRecipeForm);
+    document.getElementById("recipe-save-btn").addEventListener("click", saveCustomRecipe);
+    document.getElementById("detect-recipe-ing-btn").addEventListener("click", detectIngredientsForRecipe);
+    document.getElementById("recipe-ing-add-btn").addEventListener("click", addRecipeIngredientToForm);
+    document.getElementById("recipe-ing-name").addEventListener("keydown", function(e){
+      if(e.key === "Enter"){ e.preventDefault(); addRecipeIngredientToForm(); }
     });
+    document.getElementById("recipe-ing-chips").addEventListener("click", function(e){
+      var btn = e.target.closest("button[data-recipe-ing-idx]");
+      if(!btn){ return; }
+      removeRecipeIngredientFromForm(parseInt(btn.dataset.recipeIngIdx, 10));
+    });
+
+    document.getElementById("fridge-ing-add-btn").addEventListener("click", addFridgeIngredient);
+    document.getElementById("fridge-ing-input").addEventListener("keydown", function(e){
+      if(e.key === "Enter"){ e.preventDefault(); addFridgeIngredient(); }
+    });
+    document.getElementById("fridge-ing-chips").addEventListener("click", function(e){
+      var btn = e.target.closest("button[data-fridge-idx]");
+      if(!btn){ return; }
+      removeFridgeIngredient(parseInt(btn.dataset.fridgeIdx, 10));
+    });
+    document.getElementById("fridge-find-btn").addEventListener("click", renderFridgeResults);
+    document.getElementById("menu-fridge-results").addEventListener("click", handleRecipeCardClick);
 
     document.getElementById("sync-code-save").addEventListener("click", function(){
       var value = document.getElementById("sync-code-input").value.trim();
@@ -1376,6 +2347,15 @@
     var savedHistory = await storeGet("courses:history");
     if(savedHistory){ try{ state.history = JSON.parse(savedHistory); }catch(e){ state.history = []; } }
 
+    var savedFavorites = await storeGet("courses:favorites");
+    if(savedFavorites){ try{ state.favorites = JSON.parse(savedFavorites); }catch(e){ state.favorites = []; } }
+
+    var savedCustomRecipes = await storeGet("courses:custom-recipes");
+    if(savedCustomRecipes){ try{ state.customRecipes = JSON.parse(savedCustomRecipes); }catch(e){ state.customRecipes = []; } }
+
+    var savedCartNotes = await storeGet("courses:cart-notes");
+    if(savedCartNotes){ try{ state.cartNotes = JSON.parse(savedCartNotes); }catch(e){ state.cartNotes = []; } }
+
     state.loyaltyCard = (await storeGet("courses:loyalty-card")) || "";
     state.loyaltyPhoto = (await storeGet("courses:loyalty-photo")) || "";
 
@@ -1383,6 +2363,12 @@
     renderList();
     renderCart();
     renderHistory();
+    renderCartNotes();
+    renderIngredientRayonSelect("recipe-ing-rayon");
+    renderMenuTagNav();
+    renderRecipeTagSelect();
+    renderMenuBrowseResults();
+    renderFavoritesResults();
 
     if(firebaseSdkAvailable && firebaseConfigured){
       var savedRoomCode = DEFAULT_ROOM_CODE || (await storeGet("courses:room-code"));
