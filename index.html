@@ -1940,21 +1940,27 @@
 
   async function markAsPurchased(){
     if(state.cart.length === 0){ showToast("Le panier est vide"); return; }
-    var totalQty = state.cart.reduce(function(sum, it){ return sum + it.qty; }, 0);
+    var checkedItems = state.cart.filter(function(it){ return it.checked; });
+    var uncheckedItems = state.cart.filter(function(it){ return !it.checked; });
+    if(checkedItems.length === 0){ showToast("Coche au moins un article à marquer comme acheté"); return; }
+
+    var totalQty = checkedItems.reduce(function(sum, it){ return sum + it.qty; }, 0);
     var entry = {
       id: uid(),
       date: new Date().toISOString(),
-      items: state.cart.map(function(it){ return {name: it.name, rayon: it.rayon, qty: it.qty}; }),
+      items: checkedItems.map(function(it){ return {name: it.name, rayon: it.rayon, qty: it.qty}; }),
       count: totalQty
     };
     state.history.unshift(entry);
     state.history = state.history.slice(0, 40);
     await persistHistory();
-    state.cart = [];
+    state.cart = uncheckedItems;
     await persistCart();
     renderCart();
     renderHistory();
-    showToast("Courses marquées comme achetées 🛒");
+    showToast(uncheckedItems.length > 0
+      ? "Articles cochés archivés — le reste attend toujours dans le panier 🛒"
+      : "Courses marquées comme achetées 🛒");
   }
 
   async function deleteHistoryEntry(entryId){
